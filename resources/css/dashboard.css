@@ -65,11 +65,6 @@
     font-size: var(--font-size-sm);
 }
 
-.task-panel__pagination {
-    padding: 0.75rem 1rem;
-    border-top: 1px solid var(--color-border);
-}
-
 .task-table-wrap {
     overflow-x: auto;
     overflow-y: visible;
@@ -120,6 +115,14 @@
 .task-table__date,
 .task-table__muted {
     color: var(--color-text-muted);
+    white-space: nowrap;
+}
+
+.task-table__assignees,
+.task-table__teams {
+    max-width: 14rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
 }
 
@@ -277,45 +280,78 @@
     text-align: center;
 }
 
-.task-panel__pagination nav {
-    display: flex;
-    gap: 0.25rem;
-    justify-content: flex-end;
-    flex-wrap: wrap;
+.task-pagination {
+    margin-top: 0.75rem;
 }
 
-.task-panel__pagination nav > div {
+.task-pagination__nav {
     display: flex;
-    gap: 0.25rem;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.task-pagination__summary {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+}
+
+.task-pagination__controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
     align-items: center;
 }
 
-.task-panel__pagination a,
-.task-panel__pagination span {
+.task-pagination__button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 2rem;
+    width: 2rem;
     height: 2rem;
-    padding: 0 0.5rem;
     color: var(--color-text-muted);
-    font-size: var(--font-size-sm);
     text-decoration: none;
+    background-color: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
 }
 
-.task-panel__pagination a:hover {
+.task-pagination__button:hover {
     color: var(--color-text);
     background-color: var(--color-surface-muted);
 }
 
-.task-panel__pagination span[aria-current='page'] {
-    color: var(--color-text);
-    font-weight: var(--font-weight-medium);
-    background-color: var(--color-surface-muted);
+.task-pagination__button:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
 }
 
-.task-panel__pagination span[aria-disabled='true'] {
-    opacity: 0.5;
+.task-pagination__button.is-disabled {
+    cursor: default;
+    opacity: 0.45;
+}
+
+.task-pagination__page-select select {
+    min-width: 7rem;
+    height: 2rem;
+    padding: 0 1.75rem 0 0.625rem;
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: var(--font-size-sm);
+    background-color: var(--color-surface);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%236b7280' stroke-width='1.5'%3E%3Cpath d='M5 7.5 10 12.5 15 7.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 0.875rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    appearance: none;
+    cursor: pointer;
+}
+
+.task-pagination__page-select select:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
 }

@@ -174,6 +174,16 @@ const closeTaskActionMenus = (exceptMenu = null) => {
     });
 };
 
+const initPagination = () => {
+    document.querySelectorAll('[data-pagination-page-select]').forEach((select) => {
+        select.addEventListener('change', () => {
+            if (select.value) {
+                window.location.assign(select.value);
+            }
+        });
+    });
+};
+
 const initTaskActionMenus = () => {
     document.querySelectorAll('[data-task-actions]').forEach((wrapper) => {
         const toggle = wrapper.querySelector('[data-task-actions-toggle]');
@@ -225,6 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     initTaskActionMenus();
+    initPagination();
 
     document.addEventListener('click', (event) => {
         if (! event.target.closest('[data-task-actions]')) {

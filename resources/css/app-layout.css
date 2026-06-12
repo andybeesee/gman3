@@ -323,7 +323,8 @@ body.app-page {
     box-shadow: var(--shadow-popover);
 }
 
-.app-layout.is-collapsed .app-sidebar__user-menu .app-sidebar__dropdown {
+.app-layout.is-collapsed .app-sidebar__user-menu .app-sidebar__dropdown,
+.app-layout.is-collapsed .app-sidebar__theme .app-sidebar__dropdown {
     right: auto;
     left: calc(100% + 0.5rem);
     bottom: 0;

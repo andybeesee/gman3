@@ -27,6 +27,6 @@ class UpdateTaskStatusController extends Controller
 
         $task->setStatus($status, $request->user());
 
-        return to_route('dashboard')->with('status', __('Task status updated.'));
+        return back(fallback: route('dashboard'))->with('status', __('Task status updated.'));
     }
 }

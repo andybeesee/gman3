@@ -119,6 +119,7 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 ### Model Creation
 
 - When creating new models, create useful factories and seeders for them too. Ask the user if they need any other things, using `php artisan make:model --help` to check the available options.
+- Any model used in a polymorphic relation (`morphTo`, `morphMany`, `morphToMany`, etc.) must be registered in `Relation::enforceMorphMap()` in `AppServiceProvider`. Use a short alias (e.g. `'task' => Task::class`), not the fully qualified class name in the database.
 
 ## APIs & Eloquent Resources
 

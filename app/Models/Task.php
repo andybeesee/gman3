@@ -6,6 +6,7 @@ use App\Models\Concerns\HasAssignees;
 use App\Models\Concerns\HasSchedulableDates;
 use App\Models\Concerns\HasStatuses;
 use App\Models\Concerns\HasTeams;
+use App\Models\Scopes\VisibleToAuthenticatedUserScope;
 use Database\Factories\TaskFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,6 +20,11 @@ class Task extends Model
     /** @use HasFactory<TaskFactory> */
     use HasAssignees, HasFactory, HasSchedulableDates, HasStatuses, HasTeams {
         setStatus as protected setStatusFromTrait;
+    }
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new VisibleToAuthenticatedUserScope);
     }
 
     /**

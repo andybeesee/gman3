@@ -85,7 +85,7 @@
                     <ul class="app-sidebar__menu">
                         <li class="app-sidebar__menu-item">
                             <a
-                                href="#"
+                                href="{{ route('tasks.index') }}"
                                 class="app-sidebar__menu-button"
                                 data-sidebar-tooltip="{{ __('Tasks') }}"
                             >

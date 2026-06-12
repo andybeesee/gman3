@@ -2,6 +2,7 @@
 
 use App\Models\Status;
 use App\Models\Task;
+use App\Models\Team;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -77,11 +78,13 @@ test('assignee reopening a task clears completion details', function () {
 test('users who are not assignees cannot update task status', function () {
     $assignee = User::factory()->create();
     $otherUser = User::factory()->create();
+    $team = Team::factory()->create();
     $openStatus = Status::factory()->create(['slug' => 'pending', 'is_closed' => false]);
     $nextStatus = Status::factory()->create(['slug' => 'in-progress', 'is_closed' => false]);
 
     $task = Task::query()->create(['title' => 'Ship feature']);
     $task->syncAssignees([$assignee]);
+    $task->syncTeams([$team]);
     $task->setStatus($openStatus);
 
     $this->actingAs($otherUser)
