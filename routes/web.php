@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProjectIndexController;
 use App\Http\Controllers\TaskIndexController;
 use App\Http\Controllers\TeamIndexController;
 use App\Http\Controllers\UpdateTaskStatusController;
@@ -13,6 +14,7 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
     Route::get('/tasks', TaskIndexController::class)->name('tasks.index');
+    Route::get('/projects', ProjectIndexController::class)->name('projects.index');
     Route::get('/teams', TeamIndexController::class)->name('teams.index');
     Route::patch('/tasks/{task}/status', UpdateTaskStatusController::class)->name('tasks.status.update');
 });

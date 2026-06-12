@@ -38,4 +38,12 @@ class Team extends Model
     {
         return $this->morphedByMany(User::class, 'teamable');
     }
+
+    /**
+     * @return MorphToMany<Project, $this>
+     */
+    public function projects(): MorphToMany
+    {
+        return $this->morphedByMany(Project::class, 'teamable');
+    }
 }

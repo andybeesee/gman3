@@ -2,11 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Models\Project;
 use App\Models\Status;
 use App\Models\Task;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Collection;
 
 /**
  * @extends Factory<Task>
@@ -67,10 +69,52 @@ class TaskFactory extends Factory
     /**
      * @return $this
      */
-    public function ownedBy(User|Team $owner): static
+    public function ownedBy(User|Team|Project $owner): static
     {
         return $this->afterCreating(function (Task $task) use ($owner): void {
             $task->setOwner($owner);
         });
+    }
+
+    /**
+     * @return $this
+     */
+    public function forProject(Project $project): static
+    {
+        return $this->afterCreating(function (Task $task) use ($project): void {
+            $task->setOwner($project);
+            $task->syncTeams($project->teams);
+
+            $assignees = $this->assigneesForProject($project);
+
+            if ($assignees->isNotEmpty()) {
+                $task->syncAssignees($assignees);
+            }
+        });
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    protected function assigneesForProject(Project $project): Collection
+    {
+        if ($project->isPersonallyOwned() && $project->owner_user_id !== null) {
+            return User::query()->whereKey($project->owner_user_id)->get();
+        }
+
+        $memberIds = $project->teams()
+            ->with('members')
+            ->get()
+            ->flatMap(fn (Team $team) => $team->members)
+            ->unique('id')
+            ->pluck('id');
+
+        if ($memberIds->isEmpty()) {
+            return User::query()->inRandomOrder()->limit(fake()->numberBetween(1, 3))->get();
+        }
+
+        return User::query()
+            ->whereIn('id', $memberIds->random(min(fake()->numberBetween(1, 3), $memberIds->count()))->all())
+            ->get();
     }
 }

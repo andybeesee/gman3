@@ -95,7 +95,7 @@
                         </li>
                         <li class="app-sidebar__menu-item">
                             <a
-                                href="#"
+                                href="{{ route('projects.index') }}"
                                 class="app-sidebar__menu-button"
                                 data-sidebar-tooltip="{{ __('Projects') }}"
                             >
