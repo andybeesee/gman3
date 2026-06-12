@@ -68,4 +68,18 @@ trait HasStatuses
             $query->where('status_id', $statusId);
         });
     }
+
+    public function scopeWhereStatusOpen($query)
+    {
+        return $query->whereHas('currentStatusChange.status', function ($query): void {
+            $query->where('is_closed', false);
+        });
+    }
+
+    public function scopeWhereStatusClosed($query)
+    {
+        return $query->whereHas('currentStatusChange.status', function ($query): void {
+            $query->where('is_closed', true);
+        });
+    }
 }

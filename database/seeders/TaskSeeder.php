@@ -9,12 +9,14 @@ use Illuminate\Database\Seeder;
 
 class TaskSeeder extends Seeder
 {
+    private const TARGET_TASK_COUNT = 1000;
+
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        $tasksToCreate = 150 - Task::query()->count();
+        $tasksToCreate = self::TARGET_TASK_COUNT - Task::query()->count();
 
         if ($tasksToCreate <= 0) {
             return;
@@ -30,7 +32,7 @@ class TaskSeeder extends Seeder
     {
         Task::query()
             ->inRandomOrder()
-            ->limit(40)
+            ->limit(270)
             ->get()
             ->each(function (Task $task): void {
                 if ($task->start_date !== null) {
@@ -56,7 +58,7 @@ class TaskSeeder extends Seeder
 
         Task::query()
             ->inRandomOrder()
-            ->limit(60)
+            ->limit(400)
             ->get()
             ->each(function (Task $task) use ($statuses, $users): void {
                 $progression = $statuses->random(fake()->numberBetween(1, 3));

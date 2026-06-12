@@ -118,28 +118,127 @@ const initSidebar = (layout) => {
     });
 };
 
+const resetTaskActionMenuPosition = (menu) => {
+    menu.classList.remove('is-positioning', 'is-open-upward');
+    menu.style.position = '';
+    menu.style.top = '';
+    menu.style.left = '';
+    menu.style.zIndex = '';
+    menu.style.visibility = '';
+    menu.style.pointerEvents = '';
+};
+
+const positionTaskActionMenu = (toggle, menu) => {
+    menu.classList.add('is-open', 'is-positioning');
+
+    const toggleRect = toggle.getBoundingClientRect();
+    const menuHeight = menu.offsetHeight;
+    const menuWidth = menu.offsetWidth;
+    const gap = 4;
+    const viewportPadding = 8;
+
+    const spaceBelow = window.innerHeight - toggleRect.bottom;
+    const openUpward = spaceBelow < menuHeight + gap && toggleRect.top > menuHeight + gap;
+
+    let top = openUpward
+        ? toggleRect.top - menuHeight - gap
+        : toggleRect.bottom + gap;
+
+    let left = toggleRect.right - menuWidth;
+
+    top = Math.max(viewportPadding, Math.min(top, window.innerHeight - menuHeight - viewportPadding));
+    left = Math.max(viewportPadding, Math.min(left, window.innerWidth - menuWidth - viewportPadding));
+
+    menu.style.position = 'fixed';
+    menu.style.top = `${top}px`;
+    menu.style.left = `${left}px`;
+    menu.style.zIndex = '50';
+    menu.classList.toggle('is-open-upward', openUpward);
+    menu.classList.remove('is-positioning');
+};
+
+const closeTaskActionMenus = (exceptMenu = null) => {
+    document.querySelectorAll('[data-task-actions-menu]').forEach((menu) => {
+        if (menu !== exceptMenu) {
+            menu.classList.remove('is-open');
+            resetTaskActionMenuPosition(menu);
+        }
+    });
+
+    document.querySelectorAll('[data-task-actions-toggle]').forEach((toggle) => {
+        const menu = toggle.parentElement?.querySelector('[data-task-actions-menu]');
+
+        if (! menu || menu !== exceptMenu) {
+            toggle.setAttribute('aria-expanded', 'false');
+        }
+    });
+};
+
+const initTaskActionMenus = () => {
+    document.querySelectorAll('[data-task-actions]').forEach((wrapper) => {
+        const toggle = wrapper.querySelector('[data-task-actions-toggle]');
+        const menu = wrapper.querySelector('[data-task-actions-menu]');
+
+        if (! toggle || ! menu) {
+            return;
+        }
+
+        toggle.addEventListener('click', (event) => {
+            event.stopPropagation();
+
+            const willOpen = ! menu.classList.contains('is-open');
+
+            closeTaskActionMenus(willOpen ? menu : null);
+
+            if (willOpen) {
+                positionTaskActionMenu(toggle, menu);
+                toggle.setAttribute('aria-expanded', 'true');
+            } else {
+                menu.classList.remove('is-open');
+                resetTaskActionMenuPosition(menu);
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+    });
+
+    const closeOnViewportChange = () => closeTaskActionMenus();
+
+    window.addEventListener('scroll', closeOnViewportChange, true);
+    window.addEventListener('resize', closeOnViewportChange);
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     const layout = document.querySelector('[data-app-layout]');
 
-    if (! layout) {
-        return;
+    if (layout) {
+        initSidebar(layout);
+        initThemeMenu(layout);
+        initUserMenu(layout);
+
+        document.addEventListener('click', (event) => {
+            const clickedInsideMenu = event.target.closest('[data-theme-menu], [data-user-menu], [data-theme-toggle], [data-user-toggle]');
+
+            if (! clickedInsideMenu) {
+                closeMenus(layout);
+            }
+        });
     }
 
-    initSidebar(layout);
-    initThemeMenu(layout);
-    initUserMenu(layout);
+    initTaskActionMenus();
 
     document.addEventListener('click', (event) => {
-        const clickedInsideMenu = event.target.closest('[data-theme-menu], [data-user-menu], [data-theme-toggle], [data-user-toggle]');
-
-        if (! clickedInsideMenu) {
-            closeMenus(layout);
+        if (! event.target.closest('[data-task-actions]')) {
+            closeTaskActionMenus();
         }
     });
 
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
-            closeMenus(layout);
+            if (layout) {
+                closeMenus(layout);
+            }
+
+            closeTaskActionMenus();
         }
     });
 });

@@ -44,6 +44,7 @@ class StatusSeeder extends Seeder
                 'light_theme_color' => '#16a34a',
                 'dark_theme_color' => '#4ade80',
                 'sort_order' => 4,
+                'is_closed' => true,
             ],
             [
                 'name' => 'Cancelled',
@@ -52,6 +53,7 @@ class StatusSeeder extends Seeder
                 'light_theme_color' => '#dc2626',
                 'dark_theme_color' => '#f87171',
                 'sort_order' => 5,
+                'is_closed' => true,
             ],
         ];
 

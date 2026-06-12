@@ -27,6 +27,14 @@ class StatusFactory extends Factory
             'light_theme_color' => fake()->hexColor(),
             'dark_theme_color' => fake()->hexColor(),
             'sort_order' => fake()->numberBetween(1, 10),
+            'is_closed' => false,
         ];
+    }
+
+    public function closed(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'is_closed' => true,
+        ]);
     }
 }
