@@ -156,7 +156,7 @@ test('tasks tab shows the project for project owned tasks', function () {
 
 test('members tab shows add and remove controls for team members', function () {
     $member = User::factory()->create(['name' => 'Jamie Lee']);
-    $otherUser = User::factory()->create(['name' => 'Alex Rivera']);
+    $otherUser = User::factory()->forSupervisor($member)->create(['name' => 'Alex Rivera']);
     $team = Team::factory()->create(['name' => 'Platform Team']);
     $team->members()->attach($member);
 

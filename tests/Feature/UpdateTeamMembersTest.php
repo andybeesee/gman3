@@ -79,3 +79,35 @@ test('team members cannot add an existing member again', function () {
 
     expect($team->members()->count())->toBe(1);
 });
+
+test('super admins can add a user to any team without being a member', function () {
+    $admin = User::factory()->superAdmin()->create();
+    $member = User::factory()->create();
+    $candidate = User::factory()->create();
+    $team = Team::factory()->create(['name' => 'Platform Team']);
+    $team->members()->attach($member);
+
+    $this->actingAs($admin)
+        ->post(route('teams.members.store', $team), [
+            'user_id' => $candidate->id,
+        ])
+        ->assertRedirect(route('teams.show', ['team' => $team, 'tab' => 'members']))
+        ->assertSessionHas('status');
+
+    expect($team->members()->pluck('users.id')->all())->toContain($member->id, $candidate->id);
+});
+
+test('super admins can remove a user from any team without being a member', function () {
+    $admin = User::factory()->superAdmin()->create();
+    $member = User::factory()->create();
+    $otherMember = User::factory()->create();
+    $team = Team::factory()->create(['name' => 'Platform Team']);
+    $team->members()->attach([$member->id, $otherMember->id]);
+
+    $this->actingAs($admin)
+        ->delete(route('teams.members.destroy', [$team, $otherMember]))
+        ->assertRedirect(route('teams.show', ['team' => $team, 'tab' => 'members']))
+        ->assertSessionHas('status');
+
+    expect($team->members()->pluck('users.id')->all())->toBe([$member->id]);
+});

@@ -57,7 +57,7 @@ class TeamShowController extends Controller
     private function dataForTab(Request $request, Team $team, string $tab): array
     {
         return match ($tab) {
-            'members' => $this->membersTabData($team),
+            'members' => $this->membersTabData($request, $team),
             'projects' => $this->projectsTabData($team),
             'tasks' => $this->tasksTabData($team),
             default => $this->dashboardTabData($team),
@@ -98,7 +98,7 @@ class TeamShowController extends Controller
     /**
      * @return array<string, mixed>
      */
-    private function membersTabData(Team $team): array
+    private function membersTabData(Request $request, Team $team): array
     {
         return [
             'members' => $team->members()
@@ -110,6 +110,7 @@ class TeamShowController extends Controller
                 ->orderBy('name')
                 ->get(),
             'nonMembers' => User::query()
+                ->visibleTo($request->user())
                 ->whereDoesntHave('teams', fn ($query) => $query->whereKey($team->id))
                 ->orderBy('name')
                 ->get(),

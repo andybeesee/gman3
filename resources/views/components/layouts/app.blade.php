@@ -85,16 +85,6 @@
                     <ul class="app-sidebar__menu">
                         <li class="app-sidebar__menu-item">
                             <a
-                                href="{{ route('tasks.index') }}"
-                                class="app-sidebar__menu-button"
-                                data-sidebar-tooltip="{{ __('Tasks') }}"
-                            >
-                                <i class="fa-solid fa-list-check" aria-hidden="true"></i>
-                                <span class="app-sidebar__menu-button-text">{{ __('Tasks') }}</span>
-                            </a>
-                        </li>
-                        <li class="app-sidebar__menu-item">
-                            <a
                                 href="{{ route('projects.index') }}"
                                 class="app-sidebar__menu-button"
                                 data-sidebar-tooltip="{{ __('Projects') }}"
@@ -105,12 +95,32 @@
                         </li>
                         <li class="app-sidebar__menu-item">
                             <a
+                                href="{{ route('tasks.index') }}"
+                                class="app-sidebar__menu-button"
+                                data-sidebar-tooltip="{{ __('Tasks') }}"
+                            >
+                                <i class="fa-solid fa-list-check" aria-hidden="true"></i>
+                                <span class="app-sidebar__menu-button-text">{{ __('Tasks') }}</span>
+                            </a>
+                        </li>
+                        <li class="app-sidebar__menu-item">
+                            <a
                                 href="{{ route('teams.index') }}"
                                 class="app-sidebar__menu-button"
                                 data-sidebar-tooltip="{{ __('Teams') }}"
                             >
-                                <i class="fa-solid fa-users" aria-hidden="true"></i>
+                                <i class="fa-solid fa-user-group" aria-hidden="true"></i>
                                 <span class="app-sidebar__menu-button-text">{{ __('Teams') }}</span>
+                            </a>
+                        </li>
+                        <li class="app-sidebar__menu-item">
+                            <a
+                                href="{{ route('users.index') }}"
+                                class="app-sidebar__menu-button"
+                                data-sidebar-tooltip="{{ __('Users') }}"
+                            >
+                                <i class="fa-solid fa-address-book" aria-hidden="true"></i>
+                                <span class="app-sidebar__menu-button-text">{{ __('Users') }}</span>
                             </a>
                         </li>
                     </ul>

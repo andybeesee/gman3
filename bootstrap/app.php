@@ -24,6 +24,16 @@ return Application::configure(basePath: dirname(__DIR__))
                     ->whereKey($value)
                     ->firstOrFail();
             });
+
+            Route::bind('user', function (string $value): User {
+                /** @var User $user */
+                $user = Auth::user();
+
+                return User::query()
+                    ->visibleTo($user)
+                    ->whereKey($value)
+                    ->firstOrFail();
+            });
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {

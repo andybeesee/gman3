@@ -9,9 +9,12 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Collection;
 
 trait HasOwner
 {
+    use AppliesSupervisorVisibility;
+
     /**
      * @return MorphTo<Model, $this>
      */
@@ -73,6 +76,27 @@ trait HasOwner
                                         });
                                 });
                         });
+                    });
+            });
+
+        $this->applySupervisorVisibilityAccess($query, $user);
+    }
+
+    /**
+     * @param  Builder<static>  $query
+     * @param  Collection<int, int>  $descendantIds
+     */
+    protected function extendQueryForSupervisorDescendants(Builder $query, Collection $descendantIds): void
+    {
+        $query->orWhere(function (Builder $query) use ($descendantIds): void {
+            $query->where('owner_type', 'user')
+                ->whereIn('owner_id', $descendantIds);
+        })->orWhereHas('assignees', fn (Builder $query) => $query->whereIn('users.id', $descendantIds))
+            ->orWhere(function (Builder $query) use ($descendantIds): void {
+                $query->where('owner_type', 'project')
+                    ->whereHasMorph('owner', [Project::class], function (Builder $query) use ($descendantIds): void {
+                        $query->whereIn('owner_user_id', $descendantIds)
+                            ->orWhereIn('created_by_user_id', $descendantIds);
                     });
             });
     }

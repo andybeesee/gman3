@@ -45,6 +45,16 @@ class UserFactory extends Factory
     }
 
     /**
+     * @return $this
+     */
+    public function forSupervisor(User $supervisor): static
+    {
+        return $this->state(fn (): array => [
+            'supervisor_id' => $supervisor->id,
+        ]);
+    }
+
+    /**
      * Indicate that the model's email address should be unverified.
      */
     public function unverified(): static

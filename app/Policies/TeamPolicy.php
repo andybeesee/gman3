@@ -28,6 +28,10 @@ class TeamPolicy
      */
     public function updateMembers(User $user, Team $team): bool
     {
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+
         return $team->members()->whereKey($user->id)->exists();
     }
 }

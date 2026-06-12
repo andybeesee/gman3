@@ -15,13 +15,13 @@ class RemoveTeamMemberController extends Controller
     /**
      * Remove a user from the given team.
      */
-    public function __invoke(Request $request, Team $team, User $user): RedirectResponse
+    public function __invoke(Request $request, Team $team, User $member): RedirectResponse
     {
         $this->authorize('updateMembers', $team);
 
-        abort_unless($team->members()->whereKey($user->id)->exists(), 404);
+        abort_unless($team->members()->whereKey($member->id)->exists(), 404);
 
-        $team->members()->detach($user);
+        $team->members()->detach($member);
 
         return redirect()
             ->route('teams.show', ['team' => $team, 'tab' => 'members'])
