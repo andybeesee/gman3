@@ -1,0 +1,161 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Status;
+use App\Models\Team;
+use App\Models\User;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+
+class TeamShowController extends Controller
+{
+    use AuthorizesRequests;
+
+    /**
+     * @var list<string>
+     */
+    private const TABS = ['dashboard', 'members', 'projects', 'tasks'];
+
+    private const DASHBOARD_LIMIT = 8;
+
+    /**
+     * Display the given team.
+     */
+    public function __invoke(Request $request, Team $team): View
+    {
+        $this->authorize('view', $team);
+
+        $tab = $this->resolveTab($request);
+
+        $team->loadCount([
+            'members',
+            'tasks as open_tasks_count' => fn ($query) => $query->whereStatusOpen(),
+        ]);
+
+        return view('teams.show', [
+            'team' => $team,
+            'tab' => $tab,
+            'canUpdateMembers' => $request->user()->can('updateMembers', $team),
+            ...$this->dataForTab($request, $team, $tab),
+        ]);
+    }
+
+    private function resolveTab(Request $request): string
+    {
+        $tab = $request->query('tab', 'dashboard');
+
+        return in_array($tab, self::TABS, true) ? $tab : 'dashboard';
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function dataForTab(Request $request, Team $team, string $tab): array
+    {
+        return match ($tab) {
+            'members' => $this->membersTabData($team),
+            'projects' => $this->projectsTabData($team),
+            'tasks' => $this->tasksTabData($team),
+            default => $this->dashboardTabData($team),
+        };
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function dashboardTabData(Team $team): array
+    {
+        return [
+            'members' => $team->members()->orderBy('name')->get(),
+            'activeProjects' => $team->projects()
+                ->with(['currentStatusChange.status', 'ownerUser'])
+                ->withCount('ownedTasks')
+                ->whereStatusOpen()
+                ->orderByRaw('due_date IS NULL')
+                ->orderBy('due_date')
+                ->latest('id')
+                ->limit(self::DASHBOARD_LIMIT)
+                ->get(),
+            'activeTasks' => $team->tasks()
+                ->with(['currentStatusChange.status', 'assignees'])
+                ->whereStatusOpen()
+                ->orderByRaw('due_date IS NULL')
+                ->orderBy('due_date')
+                ->latest('id')
+                ->limit(self::DASHBOARD_LIMIT)
+                ->get(),
+            'statuses' => Status::query()->orderBy('sort_order')->get(),
+            'users' => collect(),
+            'projects' => new LengthAwarePaginator([], 0, 50),
+            'tasks' => new LengthAwarePaginator([], 0, 50),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function membersTabData(Team $team): array
+    {
+        return [
+            'members' => $team->members()->orderBy('name')->get(),
+            'users' => User::query()->orderBy('name')->get(),
+            'activeProjects' => collect(),
+            'activeTasks' => collect(),
+            'statuses' => collect(),
+            'projects' => new LengthAwarePaginator([], 0, 50),
+            'tasks' => new LengthAwarePaginator([], 0, 50),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function projectsTabData(Team $team): array
+    {
+        $projects = $team->projects()
+            ->with(['currentStatusChange.status', 'teams', 'ownerUser'])
+            ->withCount('ownedTasks')
+            ->orderByRaw('due_date IS NULL')
+            ->orderBy('due_date')
+            ->latest('id')
+            ->paginate(50)
+            ->appends(['tab' => 'projects']);
+
+        return [
+            'members' => collect(),
+            'users' => collect(),
+            'activeProjects' => collect(),
+            'activeTasks' => collect(),
+            'statuses' => collect(),
+            'projects' => $projects,
+            'tasks' => new LengthAwarePaginator([], 0, 50),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function tasksTabData(Team $team): array
+    {
+        $tasks = $team->tasks()
+            ->with(['currentStatusChange.status', 'assignees', 'teams'])
+            ->orderByRaw('due_date IS NULL')
+            ->orderBy('due_date')
+            ->latest('id')
+            ->paginate(50)
+            ->appends(['tab' => 'tasks']);
+
+        return [
+            'members' => collect(),
+            'users' => collect(),
+            'activeProjects' => collect(),
+            'activeTasks' => collect(),
+            'statuses' => Status::query()->orderBy('sort_order')->get(),
+            'projects' => new LengthAwarePaginator([], 0, 50),
+            'tasks' => $tasks,
+        ];
+    }
+}

@@ -34,7 +34,9 @@
                         @foreach ($teams as $team)
                             <tr>
                                 <td class="task-table__title" title="{{ $team->name }}">
-                                    {{ $team->name }}
+                                    <a href="{{ route('teams.show', $team) }}" class="task-table__title-link">
+                                        {{ $team->name }}
+                                    </a>
                                 </td>
                                 <td class="task-table__numeric">
                                     {{ number_format($team->members_count) }}

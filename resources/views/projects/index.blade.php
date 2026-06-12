@@ -41,7 +41,9 @@
                             @endphp
                             <tr>
                                 <td class="task-table__title" title="{{ $project->title }}">
-                                    {{ $project->title }}
+                                    <a href="{{ route('projects.show', $project) }}" class="task-table__title-link">
+                                        {{ $project->title }}
+                                    </a>
                                 </td>
                                 <td>
                                     @if ($status)
