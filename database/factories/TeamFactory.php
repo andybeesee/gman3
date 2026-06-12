@@ -31,6 +31,22 @@ class TeamFactory extends Factory
         'Research',
         'Infrastructure',
         'Security',
+        'Quality Assurance',
+        'Developer Relations',
+        'Business Development',
+        'Content',
+        'Analytics',
+        'Platform',
+        'Growth',
+        'Partnerships',
+        'Compliance',
+        'Procurement',
+        'Technical Writing',
+        'Release Management',
+        'Site Reliability',
+        'Data Science',
+        'Mobile',
+        'Web',
     ];
 
     /**

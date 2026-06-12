@@ -416,6 +416,7 @@
 }
 
 .task-table__assignees,
+.task-table__project,
 .task-table__teams {
     max-width: 14rem;
     overflow: hidden;

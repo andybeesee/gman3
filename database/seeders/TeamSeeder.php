@@ -15,6 +15,8 @@ class TeamSeeder extends Seeder
 {
     use SeedsVisibilityGrants;
 
+    private const TARGET_TEAM_COUNT = 30;
+
     /**
      * Run the database seeds.
      */
@@ -22,7 +24,7 @@ class TeamSeeder extends Seeder
     {
         $users = User::query()->get();
 
-        foreach (TeamFactory::TEAM_NAMES as $name) {
+        foreach (array_slice(TeamFactory::TEAM_NAMES, 0, self::TARGET_TEAM_COUNT) as $name) {
             $creator = $users->isNotEmpty() ? $users->random() : null;
 
             Team::query()->updateOrCreate(
@@ -50,7 +52,7 @@ class TeamSeeder extends Seeder
             return;
         }
 
-        $maxTeamsPerUser = min(3, $teams->count());
+        $maxTeamsPerUser = min(5, $teams->count());
 
         foreach ($users as $user) {
             $user->syncTeams(
@@ -67,7 +69,7 @@ class TeamSeeder extends Seeder
         Team::query()
             ->where('visibility', Visibility::Private)
             ->inRandomOrder()
-            ->limit(4)
+            ->limit(12)
             ->get()
             ->each(fn (Team $team) => $this->maybeSeedVisibilityGrants($team, $users));
     }

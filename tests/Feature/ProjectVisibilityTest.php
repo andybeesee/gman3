@@ -32,7 +32,7 @@ test('private team owned projects are visible to members of associated teams', f
     $team = Team::factory()->create();
     $team->members()->attach($member);
 
-    $project = Project::factory()->privateForTeam()->create([
+    $project = Project::factory()->privateForTeam($member)->create([
         'title' => 'Shared project',
     ]);
     $project->syncTeams([$team]);

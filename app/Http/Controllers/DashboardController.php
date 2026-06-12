@@ -16,7 +16,7 @@ class DashboardController extends Controller
         $tasks = $request->user()
             ->assignedTasks()
             ->whereStatusOpen()
-            ->with(['currentStatusChange.status', 'teams'])
+            ->with(['currentStatusChange.status', 'teams', 'owner'])
             ->orderByRaw('due_date IS NULL')
             ->orderBy('due_date')
             ->latest('id')

@@ -5,9 +5,10 @@
         <thead>
             <tr>
                 <th scope="col">{{ __('Title') }}</th>
+                <th scope="col">{{ __('Project') }}</th>
                 <th scope="col">{{ __('Status') }}</th>
-                <th scope="col">{{ __('Assignees') }}</th>
                 <th scope="col">{{ __('Teams') }}</th>
+                <th scope="col">{{ __('Assignees') }}</th>
                 <th scope="col">{{ __('Start') }}</th>
                 <th scope="col">{{ __('Due') }}</th>
                 <th scope="col" class="task-table__actions-heading">
@@ -24,6 +25,15 @@
                     <td class="task-table__title" title="{{ $task->title }}">
                         {{ $task->title }}
                     </td>
+                    <td class="task-table__project">
+                        @if ($task->isProjectOwned() && $task->owner)
+                            <a href="{{ route('projects.show', $task->owner) }}" class="task-table__title-link">
+                                {{ $task->owner->title }}
+                            </a>
+                        @else
+                            <span class="task-table__muted">—</span>
+                        @endif
+                    </td>
                     <td>
                         @if ($status)
                             <span
@@ -37,18 +47,18 @@
                             <span class="task-table__muted">—</span>
                         @endif
                     </td>
-                    <td class="task-table__assignees">
-                        @if ($task->assignees->isEmpty())
-                            <span class="task-table__muted">—</span>
-                        @else
-                            {{ $task->assignees->pluck('name')->join(', ') }}
-                        @endif
-                    </td>
                     <td class="task-table__teams">
                         @if ($task->teams->isEmpty())
                             <span class="task-table__muted">—</span>
                         @else
                             {{ $task->teams->pluck('name')->join(', ') }}
+                        @endif
+                    </td>
+                    <td class="task-table__assignees">
+                        @if ($task->assignees->isEmpty())
+                            <span class="task-table__muted">—</span>
+                        @else
+                            {{ $task->assignees->pluck('name')->join(', ') }}
                         @endif
                     </td>
                     <td class="task-table__date">

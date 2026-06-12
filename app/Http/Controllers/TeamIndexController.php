@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Task;
 use App\Models\Team;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -20,10 +21,15 @@ class TeamIndexController extends Controller
 
         $teams = Team::query()
             ->visibleTo($request->user())
-            ->withCount([
-                'members',
-                'tasks as open_tasks_count' => fn ($query) => $query->whereStatusOpen(),
-            ])
+            ->select('teams.*')
+            ->withCount('members')
+            ->selectSub(
+                Task::query()
+                    ->selectRaw('count(*)')
+                    ->whereStatusOpen()
+                    ->forTeamColumn('teams.id'),
+                'open_tasks_count',
+            )
             ->orderBy('name')
             ->paginate(50);
 

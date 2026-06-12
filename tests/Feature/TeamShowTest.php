@@ -42,6 +42,10 @@ test('dashboard tab shows active projects tasks and members', function () {
     $closedTask->syncTeams([$team]);
     $closedTask->setStatus($closedStatus);
 
+    $projectTask = Task::query()->create(['title' => 'Project launch checklist']);
+    $projectTask->setOwner($project);
+    $projectTask->setStatus($openStatus);
+
     $this->actingAs($member)
         ->get(route('teams.show', $team))
         ->assertSuccessful()
@@ -51,8 +55,34 @@ test('dashboard tab shows active projects tasks and members', function () {
         ->assertSee('Platform rollout')
         ->assertSee('Planning')
         ->assertSee('Prepare launch checklist')
+        ->assertSee('Project launch checklist')
         ->assertDontSee('Archived rollout')
         ->assertDontSee('Archived checklist item');
+});
+
+test('dashboard tab includes open project tasks and team owned tasks without teamables rows', function () {
+    $member = User::factory()->create();
+    $team = Team::factory()->create(['name' => 'Platform Team']);
+    $team->members()->attach($member);
+    $openStatus = Status::factory()->create(['slug' => 'pending', 'is_closed' => false]);
+
+    $project = Project::factory()->teamOwned()->create(['title' => 'Platform rollout']);
+    $project->syncTeams([$team]);
+    $project->setStatus($openStatus);
+
+    $projectTask = Task::query()->create(['title' => 'Project only task link']);
+    $projectTask->setOwner($project);
+    $projectTask->setStatus($openStatus);
+
+    $teamTask = Task::query()->create(['title' => 'Team owned without pivot']);
+    $teamTask->setOwner($team);
+    $teamTask->setStatus($openStatus);
+
+    $this->actingAs($member)
+        ->get(route('teams.show', $team))
+        ->assertSuccessful()
+        ->assertSee('Project only task link')
+        ->assertSee('Team owned without pivot');
 });
 
 test('projects tab lists all visible projects for the team', function () {
@@ -101,6 +131,27 @@ test('tasks tab lists all visible tasks for the team', function () {
         ->assertSee(__('All tasks'))
         ->assertSee('Open checklist item')
         ->assertSee('Closed checklist item');
+});
+
+test('tasks tab shows the project for project owned tasks', function () {
+    $member = User::factory()->create();
+    $team = Team::factory()->create(['name' => 'Platform Team']);
+    $team->members()->attach($member);
+    $openStatus = Status::factory()->create(['slug' => 'pending', 'is_closed' => false]);
+
+    $project = Project::factory()->teamOwned()->create(['title' => 'Platform rollout']);
+    $project->syncTeams([$team]);
+    $project->setStatus($openStatus);
+
+    $task = Task::query()->create(['title' => 'Prepare launch checklist']);
+    $task->setOwner($project);
+    $task->setStatus($openStatus);
+
+    $this->actingAs($member)
+        ->get(route('teams.show', ['team' => $team, 'tab' => 'tasks']))
+        ->assertSuccessful()
+        ->assertSee('Prepare launch checklist')
+        ->assertSee('Platform rollout');
 });
 
 test('members tab shows add and remove controls for team members', function () {

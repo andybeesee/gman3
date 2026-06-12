@@ -7,6 +7,7 @@ use App\Models\Concerns\HasTeamVisibility;
 use App\Models\Concerns\HasVisibility;
 use Database\Factories\TeamFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -65,5 +66,18 @@ class Team extends Model
     public function projects(): MorphToMany
     {
         return $this->morphedByMany(Project::class, 'teamable');
+    }
+
+    /**
+     * @return Builder<Task>
+     */
+    public function relatedTasksQuery(): Builder
+    {
+        return Task::query()->forTeam($this);
+    }
+
+    protected static function superAdminSeesAll(): bool
+    {
+        return true;
     }
 }

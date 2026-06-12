@@ -59,4 +59,9 @@ class Project extends Model
     {
         return $this->morphMany(Task::class, 'owner');
     }
+
+    protected static function superAdminSeesAll(): bool
+    {
+        return true;
+    }
 }

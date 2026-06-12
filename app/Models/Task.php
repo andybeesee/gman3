@@ -63,10 +63,65 @@ class Task extends Model
      */
     public function scopeForTeam(Builder $query, Team $team): Builder
     {
-        return $query->whereIn(
-            $query->qualifyColumn('id'),
-            $team->tasks()->select('tasks.id'),
-        );
+        return $query->forTeamId($team->id);
+    }
+
+    /**
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeForTeamId(Builder $query, int $teamId): Builder
+    {
+        return $query->where(function (Builder $query) use ($teamId): void {
+            $query->whereIn($query->qualifyColumn('id'), function ($subQuery) use ($teamId): void {
+                $subQuery->from('teamables')
+                    ->select('teamable_id')
+                    ->where('teamable_type', 'task')
+                    ->where('team_id', $teamId);
+            })->orWhere(function (Builder $query) use ($teamId): void {
+                $query->where('owner_type', 'team')
+                    ->where('owner_id', $teamId);
+            })->orWhere(function (Builder $query) use ($teamId): void {
+                $query->where('owner_type', 'project')
+                    ->whereIn('owner_id', function ($subQuery) use ($teamId): void {
+                        $subQuery->from('teamables')
+                            ->join('projects', 'projects.id', '=', 'teamables.teamable_id')
+                            ->select('teamables.teamable_id')
+                            ->where('teamables.teamable_type', 'project')
+                            ->where('teamables.team_id', $teamId)
+                            ->whereNull('projects.owner_user_id');
+                    });
+            });
+        });
+    }
+
+    /**
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeForTeamColumn(Builder $query, string $teamIdColumn): Builder
+    {
+        return $query->where(function (Builder $query) use ($teamIdColumn): void {
+            $query->whereExists(function ($subQuery) use ($teamIdColumn): void {
+                $subQuery->from('teamables')
+                    ->whereColumn('teamable_id', 'tasks.id')
+                    ->where('teamable_type', 'task')
+                    ->whereColumn('team_id', $teamIdColumn);
+            })->orWhere(function (Builder $query) use ($teamIdColumn): void {
+                $query->where('owner_type', 'team')
+                    ->whereColumn('owner_id', $teamIdColumn);
+            })->orWhere(function (Builder $query) use ($teamIdColumn): void {
+                $query->where('owner_type', 'project')
+                    ->whereExists(function ($subQuery) use ($teamIdColumn): void {
+                        $subQuery->from('teamables')
+                            ->join('projects', 'projects.id', '=', 'teamables.teamable_id')
+                            ->whereColumn('teamables.teamable_id', 'tasks.owner_id')
+                            ->where('teamables.teamable_type', 'project')
+                            ->whereColumn('teamables.team_id', $teamIdColumn)
+                            ->whereNull('projects.owner_user_id');
+                    });
+            });
+        });
     }
 
     /**

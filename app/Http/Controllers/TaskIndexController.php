@@ -23,6 +23,7 @@ class TaskIndexController extends Controller
             ->with([
                 'currentStatusChange.status',
                 'assignees',
+                'owner',
                 'teams' => fn ($query) => $query->visibleTo($request->user()),
             ])
             ->orderByRaw('due_date IS NULL')

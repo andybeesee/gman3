@@ -32,8 +32,9 @@ class TeamShowController extends Controller
 
         $team->loadCount([
             'members',
-            'tasks as open_tasks_count' => fn ($query) => $query->whereStatusOpen(),
         ]);
+
+        $team->open_tasks_count = $team->relatedTasksQuery()->whereStatusOpen()->count();
 
         return view('teams.show', [
             'team' => $team,
@@ -79,8 +80,8 @@ class TeamShowController extends Controller
                 ->latest('id')
                 ->limit(self::DASHBOARD_LIMIT)
                 ->get(),
-            'activeTasks' => $team->tasks()
-                ->with(['currentStatusChange.status', 'assignees'])
+            'activeTasks' => $team->relatedTasksQuery()
+                ->with(['currentStatusChange.status', 'assignees', 'owner', 'teams'])
                 ->whereStatusOpen()
                 ->orderByRaw('due_date IS NULL')
                 ->orderBy('due_date')
@@ -150,8 +151,8 @@ class TeamShowController extends Controller
      */
     private function tasksTabData(Team $team): array
     {
-        $tasks = $team->tasks()
-            ->with(['currentStatusChange.status', 'assignees', 'teams'])
+        $tasks = $team->relatedTasksQuery()
+            ->with(['currentStatusChange.status', 'assignees', 'owner', 'teams'])
             ->orderByRaw('due_date IS NULL')
             ->orderBy('due_date')
             ->latest('id')

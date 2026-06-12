@@ -26,6 +26,7 @@
                     <thead>
                         <tr>
                             <th scope="col">{{ __('Title') }}</th>
+                            <th scope="col">{{ __('Project') }}</th>
                             <th scope="col">{{ __('Status') }}</th>
                             <th scope="col">{{ __('Teams') }}</th>
                             <th scope="col">{{ __('Start') }}</th>
@@ -43,6 +44,15 @@
                             <tr>
                                 <td class="task-table__title" title="{{ $task->title }}">
                                     {{ $task->title }}
+                                </td>
+                                <td class="task-table__project">
+                                    @if ($task->isProjectOwned() && $task->owner)
+                                        <a href="{{ route('projects.show', $task->owner) }}" class="task-table__title-link">
+                                            {{ $task->owner->title }}
+                                        </a>
+                                    @else
+                                        <span class="task-table__muted">—</span>
+                                    @endif
                                 </td>
                                 <td>
                                     @if ($status)

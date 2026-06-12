@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Project;
 use App\Models\Status;
 use App\Models\Task;
 use App\Models\Team;
@@ -7,6 +8,26 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
+
+test('dashboard shows the project for tasks assigned from a project', function () {
+    $assignee = User::factory()->create();
+    $status = Status::factory()->create(['slug' => 'pending', 'is_closed' => false]);
+    $project = Project::factory()->personallyOwnedBy($assignee)->create([
+        'title' => 'Launch website',
+    ]);
+
+    $task = Task::factory()->forProject($project)->create([
+        'title' => 'Write copy',
+    ]);
+    $task->syncAssignees([$assignee]);
+    $task->setStatus($status);
+
+    $this->actingAs($assignee)
+        ->get(route('dashboard'))
+        ->assertSuccessful()
+        ->assertSee('Write copy')
+        ->assertSee('Launch website');
+});
 
 test('assignees see status change options in the task actions menu', function () {
     $assignee = User::factory()->create();

@@ -27,8 +27,8 @@ class ProjectFactory extends Factory
             : fake()->optional(0.7)->dateTimeBetween('now', '+6 months');
 
         return [
-            'title' => fake()->sentence(3),
-            'description' => fake()->optional(0.6)->paragraph(),
+            'title' => SeedNames::projectTitle(),
+            'description' => SeedNames::optionalDescription(),
             'start_date' => $startDate,
             'due_date' => $dueDate,
             'visibility' => fake()->boolean(20) ? Visibility::Public : Visibility::Private,

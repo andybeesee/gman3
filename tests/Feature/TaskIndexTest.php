@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Project;
 use App\Models\Status;
 use App\Models\Task;
 use App\Models\Team;
@@ -45,6 +46,25 @@ test('authenticated users can view public tasks across the organization', functi
         ->assertSee('Closed org task')
         ->assertSee('Alex Rivera')
         ->assertSee('Platform Team');
+});
+
+test('task index shows the project for project owned tasks', function () {
+    $user = User::factory()->create();
+    $team = Team::factory()->public()->create(['name' => 'Platform Team']);
+    $project = Project::factory()->public()->create(['title' => 'Platform rollout']);
+    $project->syncTeams([$team]);
+    $project->setStatus(Status::factory()->create(['slug' => 'pending', 'is_closed' => false]));
+
+    $task = Task::factory()->forProject($project)->create([
+        'title' => 'Prepare launch checklist',
+        'visibility' => 'public',
+    ]);
+
+    $this->actingAs($user)
+        ->get(route('tasks.index'))
+        ->assertSuccessful()
+        ->assertSee('Prepare launch checklist')
+        ->assertSee('Platform rollout');
 });
 
 test('team members can see private team tasks they are not assigned to', function () {

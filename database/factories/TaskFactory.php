@@ -29,8 +29,8 @@ class TaskFactory extends Factory
             : fake()->optional(0.7)->dateTimeBetween('now', '+2 months');
 
         return [
-            'title' => fake()->sentence(4),
-            'description' => fake()->optional(0.6)->paragraph(),
+            'title' => SeedNames::taskTitle(),
+            'description' => SeedNames::optionalDescription(),
             'start_date' => $startDate,
             'due_date' => $dueDate,
             'visibility' => fake()->boolean(20) ? Visibility::Public : Visibility::Private,
@@ -59,11 +59,13 @@ class TaskFactory extends Factory
                 $teamCount = fake()->numberBetween(1, 2);
                 $teams = Team::query()->inRandomOrder()->limit($teamCount)->get();
 
-                $task->teams()->attach($teams->pluck('id'));
-                $task->setOwner($teams->first());
-                $this->assignCreator($task);
+                if ($teams->isNotEmpty()) {
+                    $task->teams()->attach($teams->pluck('id'));
+                    $task->setOwner($teams->first());
+                    $this->assignCreator($task);
 
-                return;
+                    return;
+                }
             }
 
             $task->setOwner($assignees->first());

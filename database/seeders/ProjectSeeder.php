@@ -14,11 +14,11 @@ class ProjectSeeder extends Seeder
 {
     use SeedsVisibilityGrants;
 
-    private const TARGET_PROJECT_COUNT = 40;
+    private const TARGET_PROJECT_COUNT = 500;
 
-    private const TASKS_PER_PROJECT_MIN = 8;
+    private const TASKS_PER_PROJECT_MIN = 5;
 
-    private const TASKS_PER_PROJECT_MAX = 28;
+    private const TASKS_PER_PROJECT_MAX = 25;
 
     /**
      * Run the database seeds.

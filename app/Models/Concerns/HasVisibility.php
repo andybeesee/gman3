@@ -51,6 +51,10 @@ trait HasVisibility
 
     public function isVisibleTo(User $user): bool
     {
+        if ($user->isSuperAdmin() && static::superAdminSeesAll()) {
+            return true;
+        }
+
         if ($this->isPublic()) {
             return true;
         }
@@ -77,6 +81,10 @@ trait HasVisibility
      */
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
+        if ($user->isSuperAdmin() && static::superAdminSeesAll()) {
+            return $query;
+        }
+
         return $query->where(function (Builder $query) use ($user): void {
             $query->where('visibility', Visibility::Public)
                 ->orWhere(function (Builder $query) use ($user): void {
@@ -147,5 +155,10 @@ trait HasVisibility
                         ->select('id'));
             });
         });
+    }
+
+    protected static function superAdminSeesAll(): bool
+    {
+        return false;
     }
 }
