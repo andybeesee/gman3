@@ -13,6 +13,7 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - laravel/fortify (FORTIFY) - v1
 - laravel/framework (LARAVEL) - v13
 - laravel/prompts (PROMPTS) - v0
+- livewire/livewire (LIVEWIRE) - v4
 - laravel/boost (BOOST) - v2
 - laravel/mcp (MCP) - v0
 - laravel/pail (PAIL) - v1
@@ -143,6 +144,31 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 ## Vite Error
 
 - If you receive an "Illuminate\Foundation\ViteException: Unable to locate file in Vite manifest" error, you can run `npm run build` or ask the user to run `npm run dev` or `composer run dev`.
+
+=== frontend/core rules ===
+
+# Frontend UI
+
+Livewire is installed but should be used **sparingly**. Default to simpler tools first and reach for Livewire only when server-driven reactivity clearly reduces complexity.
+
+## Stack priority (prefer in this order)
+
+1. **Blade components** — primary building block for reusable UI. Prefer anonymous/class-based Blade components over one-off markup duplication.
+2. **Inline JavaScript** — for light, page-local interactivity (toggles, simple DOM updates, form helpers).
+3. **Alpine.js** — when inline JS becomes hard to follow; use for modest client-side state and DOM behavior. Livewire 4 bundles Alpine — do not add a separate Alpine install.
+4. **Livewire** — last resort for genuinely dynamic, server-backed UI (real-time validation, multi-step wizards, complex tables with server state). Do not reach for Livewire for static pages or interactions that Blade + a few lines of JS can handle.
+
+## Livewire (when you do use it)
+
+- Keep state server-side; validate and authorize in actions as you would in HTTP requests.
+- Follow existing component conventions in the project before introducing a new format.
+- Activate the `livewire-development` skill when working on Livewire components.
+
+## Styling
+
+- Use **Tailwind** for margin, spacing, and layout utilities only.
+- Use **custom CSS variables and stylesheets** for colors, typography, components, and visual design (`resources/css/variables.css`, `resources/css/*.css`).
+- Load **Atkinson Hyperlegible** and **Font Awesome** from `public/css/` and `public/webfonts/`.
 
 === pint/core rules ===
 
