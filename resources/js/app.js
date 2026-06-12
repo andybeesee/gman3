@@ -16,14 +16,40 @@ const getStoredTheme = () => localStorage.getItem(THEME_STORAGE_KEY) ?? 'system'
 
 applyTheme(getStoredTheme());
 
-const initThemeMenu = (layout) => {
-    const themeButton = layout.querySelector('[data-theme-toggle]');
-    const themeMenu = layout.querySelector('[data-theme-menu]');
-    const themeOptions = layout.querySelectorAll('[data-theme-option]');
+const closeMenus = (layout) => {
+    layout.querySelectorAll('[data-theme-menu], [data-user-menu]').forEach((menu) => {
+        menu.classList.remove('is-open');
+    });
 
-    if (! themeButton || ! themeMenu) {
+    layout.querySelector('[data-theme-toggle]')?.setAttribute('aria-expanded', 'false');
+    layout.querySelector('[data-user-toggle]')?.setAttribute('aria-expanded', 'false');
+};
+
+const initMenu = (layout, { toggleSelector, menuSelector, onOpen }) => {
+    const toggle = layout.querySelector(toggleSelector);
+    const menu = layout.querySelector(menuSelector);
+
+    if (! toggle || ! menu) {
         return;
     }
+
+    toggle.addEventListener('click', (event) => {
+        event.stopPropagation();
+
+        const willOpen = ! menu.classList.contains('is-open');
+
+        closeMenus(layout);
+
+        if (willOpen) {
+            menu.classList.add('is-open');
+            toggle.setAttribute('aria-expanded', 'true');
+            onOpen?.();
+        }
+    });
+};
+
+const initThemeMenu = (layout) => {
+    const themeOptions = layout.querySelectorAll('[data-theme-option]');
 
     const setActiveThemeOption = (theme) => {
         themeOptions.forEach((option) => {
@@ -33,9 +59,10 @@ const initThemeMenu = (layout) => {
 
     setActiveThemeOption(getStoredTheme());
 
-    themeButton.addEventListener('click', (event) => {
-        event.stopPropagation();
-        themeMenu.classList.toggle('is-open');
+    initMenu(layout, {
+        toggleSelector: '[data-theme-toggle]',
+        menuSelector: '[data-theme-menu]',
+        onOpen: () => setActiveThemeOption(getStoredTheme()),
     });
 
     themeOptions.forEach((option) => {
@@ -45,34 +72,29 @@ const initThemeMenu = (layout) => {
             localStorage.setItem(THEME_STORAGE_KEY, theme);
             applyTheme(theme);
             setActiveThemeOption(theme);
-            themeMenu.classList.remove('is-open');
+            closeMenus(layout);
         });
     });
+};
 
-    document.addEventListener('click', (event) => {
-        if (! layout.contains(event.target)) {
-            themeMenu.classList.remove('is-open');
-        }
-    });
-
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
-            themeMenu.classList.remove('is-open');
-        }
+const initUserMenu = (layout) => {
+    initMenu(layout, {
+        toggleSelector: '[data-user-toggle]',
+        menuSelector: '[data-user-menu]',
     });
 };
 
 const initSidebar = (layout) => {
-    const toggleButton = layout.querySelector('[data-sidebar-toggle]');
+    const toggleButtons = layout.querySelectorAll('[data-sidebar-toggle]');
     const collapsed = localStorage.getItem(SIDEBAR_STORAGE_KEY) === 'true';
 
     const setCollapsed = (isCollapsed) => {
         layout.classList.toggle('is-collapsed', isCollapsed);
         localStorage.setItem(SIDEBAR_STORAGE_KEY, String(isCollapsed));
 
-        if (toggleButton) {
+        toggleButtons.forEach((toggleButton) => {
             toggleButton.setAttribute('aria-expanded', String(! isCollapsed));
-        }
+        });
 
         layout.querySelectorAll('[data-sidebar-tooltip]').forEach((element) => {
             if (isCollapsed) {
@@ -81,12 +103,18 @@ const initSidebar = (layout) => {
                 element.removeAttribute('title');
             }
         });
+
+        if (isCollapsed) {
+            closeMenus(layout);
+        }
     };
 
     setCollapsed(collapsed);
 
-    toggleButton?.addEventListener('click', () => {
-        setCollapsed(! layout.classList.contains('is-collapsed'));
+    toggleButtons.forEach((toggleButton) => {
+        toggleButton.addEventListener('click', () => {
+            setCollapsed(! layout.classList.contains('is-collapsed'));
+        });
     });
 };
 
@@ -99,4 +127,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initSidebar(layout);
     initThemeMenu(layout);
+    initUserMenu(layout);
+
+    document.addEventListener('click', (event) => {
+        const clickedInsideMenu = event.target.closest('[data-theme-menu], [data-user-menu], [data-theme-toggle], [data-user-toggle]');
+
+        if (! clickedInsideMenu) {
+            closeMenus(layout);
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeMenus(layout);
+        }
+    });
 });

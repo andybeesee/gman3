@@ -47,25 +47,29 @@
                 if (localStorage.getItem('sidebar-collapsed') === 'true') {
                     layout.classList.add('is-collapsed');
 
-                    const toggle = layout.querySelector('[data-sidebar-toggle]');
-
-                    if (toggle) {
+                    layout.querySelectorAll('[data-sidebar-toggle]').forEach((toggle) => {
                         toggle.setAttribute('aria-expanded', 'false');
-                    }
+                    });
                 }
             })();
         </script>
 
         <aside class="app-sidebar" aria-label="{{ __('Application sidebar') }}">
             <div class="app-sidebar__header">
-                <div class="app-sidebar__brand" data-sidebar-tooltip="{{ config('app.name') }}">
-                    <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
-                    <span class="app-sidebar__brand-text">{{ config('app.name') }}</span>
-                </div>
+                <a
+                    href="{{ route('dashboard') }}"
+                    class="app-sidebar__menu-button app-sidebar__menu-button--lg app-sidebar__brand"
+                    data-sidebar-tooltip="{{ config('app.name') }}"
+                >
+                    <span class="app-sidebar__brand-icon" aria-hidden="true">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </span>
+                    <span class="app-sidebar__menu-button-text">{{ config('app.name') }}</span>
+                </a>
 
                 <button
                     type="button"
-                    class="app-sidebar__toggle"
+                    class="app-sidebar__collapse"
                     data-sidebar-toggle
                     aria-expanded="true"
                     aria-label="{{ __('Toggle sidebar') }}"
@@ -75,84 +79,122 @@
                 </button>
             </div>
 
-            <nav class="app-sidebar__nav" aria-label="{{ __('Main navigation') }}">
-                <a
-                    href="#"
-                    class="app-sidebar__link"
-                    data-sidebar-tooltip="{{ __('Tasks') }}"
-                >
-                    <i class="fa-solid fa-list-check" aria-hidden="true"></i>
-                    <span class="app-sidebar__link-text">{{ __('Tasks') }}</span>
-                </a>
-
-                <a
-                    href="#"
-                    class="app-sidebar__link"
-                    data-sidebar-tooltip="{{ __('Projects') }}"
-                >
-                    <i class="fa-solid fa-folder-open" aria-hidden="true"></i>
-                    <span class="app-sidebar__link-text">{{ __('Projects') }}</span>
-                </a>
-
-                <a
-                    href="#"
-                    class="app-sidebar__link"
-                    data-sidebar-tooltip="{{ __('Teams') }}"
-                >
-                    <i class="fa-solid fa-users" aria-hidden="true"></i>
-                    <span class="app-sidebar__link-text">{{ __('Teams') }}</span>
-                </a>
-            </nav>
-
-            <div class="app-sidebar__footer">
-                <div class="app-sidebar__user" data-sidebar-tooltip="{{ $user->name }}">
-                    <span class="app-sidebar__user-avatar" aria-hidden="true">{{ $userInitials }}</span>
-                    <div class="app-sidebar__user-info">
-                        <div class="app-sidebar__user-name">{{ $user->name }}</div>
-                        <div class="app-sidebar__user-email">{{ $user->email }}</div>
-                    </div>
-                </div>
-
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button
-                        type="submit"
-                        class="app-sidebar__action"
-                        data-sidebar-tooltip="{{ __('Sign out') }}"
-                    >
-                        <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
-                        <span class="app-sidebar__action-text">{{ __('Sign out') }}</span>
-                    </button>
-                </form>
-
-                <div class="app-sidebar__theme">
-                    <div class="app-sidebar__theme-menu" data-theme-menu role="menu" aria-label="{{ __('Theme options') }}">
-                        <button type="button" class="app-sidebar__theme-option" data-theme-option="light" role="menuitem">
-                            <i class="fa-solid fa-sun" aria-hidden="true"></i>
-                            <span>{{ __('Light') }}</span>
-                        </button>
-                        <button type="button" class="app-sidebar__theme-option" data-theme-option="dark" role="menuitem">
-                            <i class="fa-solid fa-moon" aria-hidden="true"></i>
-                            <span>{{ __('Dark') }}</span>
-                        </button>
-                        <button type="button" class="app-sidebar__theme-option" data-theme-option="system" role="menuitem">
-                            <i class="fa-solid fa-desktop" aria-hidden="true"></i>
-                            <span>{{ __('System') }}</span>
-                        </button>
-                    </div>
-
-                    <button
-                        type="button"
-                        class="app-sidebar__action"
-                        data-theme-toggle
-                        aria-haspopup="menu"
-                        data-sidebar-tooltip="{{ __('Theme') }}"
-                    >
-                        <i class="fa-solid fa-palette" aria-hidden="true"></i>
-                        <span class="app-sidebar__action-text">{{ __('Theme') }}</span>
-                    </button>
+            <div class="app-sidebar__content">
+                <div class="app-sidebar__group">
+                    <div class="app-sidebar__group-label">{{ __('Workspace') }}</div>
+                    <ul class="app-sidebar__menu">
+                        <li class="app-sidebar__menu-item">
+                            <a
+                                href="#"
+                                class="app-sidebar__menu-button"
+                                data-sidebar-tooltip="{{ __('Tasks') }}"
+                            >
+                                <i class="fa-solid fa-list-check" aria-hidden="true"></i>
+                                <span class="app-sidebar__menu-button-text">{{ __('Tasks') }}</span>
+                            </a>
+                        </li>
+                        <li class="app-sidebar__menu-item">
+                            <a
+                                href="#"
+                                class="app-sidebar__menu-button"
+                                data-sidebar-tooltip="{{ __('Projects') }}"
+                            >
+                                <i class="fa-solid fa-folder-open" aria-hidden="true"></i>
+                                <span class="app-sidebar__menu-button-text">{{ __('Projects') }}</span>
+                            </a>
+                        </li>
+                        <li class="app-sidebar__menu-item">
+                            <a
+                                href="#"
+                                class="app-sidebar__menu-button"
+                                data-sidebar-tooltip="{{ __('Teams') }}"
+                            >
+                                <i class="fa-solid fa-users" aria-hidden="true"></i>
+                                <span class="app-sidebar__menu-button-text">{{ __('Teams') }}</span>
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
+
+            <div class="app-sidebar__footer">
+                <div class="app-sidebar__group">
+                    <ul class="app-sidebar__menu">
+                        <li class="app-sidebar__menu-item">
+                            <div class="app-sidebar__theme">
+                                <div
+                                    class="app-sidebar__dropdown"
+                                    data-theme-menu
+                                    role="menu"
+                                    aria-label="{{ __('Theme options') }}"
+                                >
+                                    <button type="button" class="app-sidebar__theme-option" data-theme-option="light" role="menuitem">
+                                        <i class="fa-solid fa-sun" aria-hidden="true"></i>
+                                        <span>{{ __('Light') }}</span>
+                                    </button>
+                                    <button type="button" class="app-sidebar__theme-option" data-theme-option="dark" role="menuitem">
+                                        <i class="fa-solid fa-moon" aria-hidden="true"></i>
+                                        <span>{{ __('Dark') }}</span>
+                                    </button>
+                                    <button type="button" class="app-sidebar__theme-option" data-theme-option="system" role="menuitem">
+                                        <i class="fa-solid fa-desktop" aria-hidden="true"></i>
+                                        <span>{{ __('System') }}</span>
+                                    </button>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    class="app-sidebar__menu-button"
+                                    data-theme-toggle
+                                    aria-haspopup="menu"
+                                    data-sidebar-tooltip="{{ __('Theme') }}"
+                                >
+                                    <i class="fa-solid fa-palette" aria-hidden="true"></i>
+                                    <span class="app-sidebar__menu-button-text">{{ __('Theme') }}</span>
+                                </button>
+                            </div>
+                        </li>
+
+                        <li class="app-sidebar__menu-item">
+                            <div class="app-sidebar__user-menu">
+                                <div
+                                    class="app-sidebar__dropdown"
+                                    data-user-menu
+                                    role="menu"
+                                    aria-label="{{ __('Account menu') }}"
+                                >
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="app-sidebar__dropdown-item" role="menuitem">
+                                            <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
+                                            <span>{{ __('Sign out') }}</span>
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    class="app-sidebar__menu-button app-sidebar__menu-button--lg"
+                                    data-user-toggle
+                                    aria-haspopup="menu"
+                                    aria-expanded="false"
+                                    data-sidebar-tooltip="{{ $user->name }}"
+                                >
+                                    <span class="app-sidebar__avatar" aria-hidden="true">{{ $userInitials }}</span>
+                                    <span class="app-sidebar__user-copy">
+                                        <span class="app-sidebar__user-name">{{ $user->name }}</span>
+                                        <span class="app-sidebar__user-email">{{ $user->email }}</span>
+                                    </span>
+                                    <span class="app-sidebar__menu-button-meta" aria-hidden="true">
+                                        <i class="fa-solid fa-angles-up-down"></i>
+                                    </span>
+                                </button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
         </aside>
 
         <main class="app-main">
