@@ -12,16 +12,36 @@ use Illuminate\Support\Str;
 class TeamFactory extends Factory
 {
     /**
+     * @var list<string>
+     */
+    public const TEAM_NAMES = [
+        'Engineering',
+        'Design',
+        'Product',
+        'Marketing',
+        'Support',
+        'Operations',
+        'Finance',
+        'Legal',
+        'Customer Success',
+        'Sales',
+        'Human Resources',
+        'Research',
+        'Infrastructure',
+        'Security',
+    ];
+
+    /**
      * Define the model's default state.
      *
      * @return array<string, mixed>
      */
     public function definition(): array
     {
-        $name = fake()->unique()->words(2, true);
+        $name = fake()->unique()->randomElement(self::TEAM_NAMES);
 
         return [
-            'name' => Str::title($name),
+            'name' => $name,
             'slug' => Str::slug($name),
         ];
     }

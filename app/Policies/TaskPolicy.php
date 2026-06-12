@@ -24,7 +24,8 @@ class TaskPolicy
             return true;
         }
 
-        return $task->assignees()->whereKey($user->id)->exists();
+        return $task->owner_id === $user->id
+            || $task->assignees()->whereKey($user->id)->exists();
     }
 
     /**

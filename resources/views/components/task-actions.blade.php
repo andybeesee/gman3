@@ -22,29 +22,31 @@
             <span>{{ __('Edit') }}</span>
         </a>
 
-        <div class="task-actions__separator" role="separator"></div>
-        <div class="task-actions__label">{{ __('Set status') }}</div>
+        @can('updateStatus', $task)
+            <div class="task-actions__separator" role="separator"></div>
+            <div class="task-actions__label">{{ __('Set status') }}</div>
 
-        @foreach ($statuses as $status)
-            <form
-                method="POST"
-                action="{{ route('tasks.status.update', $task) }}"
-                role="none"
-            >
-                @csrf
-                @method('PATCH')
-                <input type="hidden" name="status_id" value="{{ $status->id }}">
-                <button
-                    type="submit"
-                    class="task-actions__item"
-                    role="menuitem"
-                    @disabled($task->status?->id === $status->id)
+            @foreach ($statuses as $status)
+                <form
+                    method="POST"
+                    action="{{ route('tasks.status.update', $task) }}"
+                    role="none"
                 >
-                    <i class="fa-solid {{ $status->fontAwesomeIcon() }}" aria-hidden="true"></i>
-                    <span>{{ $status->name }}</span>
-                </button>
-            </form>
-        @endforeach
+                    @csrf
+                    @method('PATCH')
+                    <input type="hidden" name="status_id" value="{{ $status->id }}">
+                    <button
+                        type="submit"
+                        class="task-actions__item"
+                        role="menuitem"
+                        @disabled($task->status?->id === $status->id)
+                    >
+                        <i class="fa-solid {{ $status->fontAwesomeIcon() }}" aria-hidden="true"></i>
+                        <span>{{ $status->name }}</span>
+                    </button>
+                </form>
+            @endforeach
+        @endcan
 
         <div class="task-actions__separator" role="separator"></div>
 

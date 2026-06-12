@@ -14,6 +14,7 @@ test('assignee can update task status from the dashboard', function () {
     $nextStatus = Status::factory()->create(['slug' => 'in-progress', 'is_closed' => false]);
 
     $task = Task::query()->create(['title' => 'Ship feature']);
+    $task->setOwner($user);
     $task->syncAssignees([$user]);
     $task->setStatus($openStatus);
 
@@ -37,6 +38,7 @@ test('assignee setting a closed status records completion details', function () 
     $closedStatus = Status::factory()->closed()->create(['slug' => 'completed']);
 
     $task = Task::query()->create(['title' => 'Ship feature']);
+    $task->setOwner($user);
     $task->syncAssignees([$user]);
     $task->setStatus($openStatus);
 
@@ -59,6 +61,7 @@ test('assignee reopening a task clears completion details', function () {
     $closedStatus = Status::factory()->closed()->create(['slug' => 'cancelled']);
 
     $task = Task::query()->create(['title' => 'Ship feature']);
+    $task->setOwner($user);
     $task->syncAssignees([$user]);
     $task->setStatus($closedStatus, $user);
 
@@ -83,6 +86,7 @@ test('users who are not assignees cannot update task status', function () {
     $nextStatus = Status::factory()->create(['slug' => 'in-progress', 'is_closed' => false]);
 
     $task = Task::query()->create(['title' => 'Ship feature']);
+    $task->setOwner($team);
     $task->syncAssignees([$assignee]);
     $task->syncTeams([$team]);
     $task->setStatus($openStatus);

@@ -3,10 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Concerns\HasTeams;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -16,7 +18,7 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, HasTeams, Notifiable;
 
     /**
      * Get the attributes that should be cast.
@@ -37,5 +39,13 @@ class User extends Authenticatable
     public function assignedTasks(): MorphToMany
     {
         return $this->morphedByMany(Task::class, 'assignable');
+    }
+
+    /**
+     * @return MorphMany<Task, $this>
+     */
+    public function ownedTasks(): MorphMany
+    {
+        return $this->morphMany(Task::class, 'owner');
     }
 }

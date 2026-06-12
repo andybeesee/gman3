@@ -14,6 +14,7 @@ test('personal tasks are hidden from users who are not assignees', function () {
     $assignee = User::factory()->create(['name' => 'Private Owner']);
 
     $task = Task::query()->create(['title' => 'Private personal task']);
+    $task->setOwner($assignee);
     $task->syncAssignees([$assignee]);
     $task->setStatus(Status::factory()->create(['slug' => 'pending', 'is_closed' => false]));
 
@@ -30,6 +31,7 @@ test('assignees can see their personal tasks on the task index', function () {
     $assignee = User::factory()->create(['name' => 'Private Owner']);
 
     $task = Task::query()->create(['title' => 'Private personal task']);
+    $task->setOwner($assignee);
     $task->syncAssignees([$assignee]);
     $task->setStatus(Status::factory()->create(['slug' => 'pending', 'is_closed' => false]));
 
@@ -40,9 +42,10 @@ test('assignees can see their personal tasks on the task index', function () {
         ->assertSee('Private Owner');
 });
 
-test('tasks with teams are not considered personal', function () {
+test('tasks owned by teams are not considered personal', function () {
+    $team = Team::factory()->create();
     $task = Task::query()->create(['title' => 'Team task']);
-    $task->syncTeams([Team::factory()->create()]);
+    $task->setOwner($team);
 
     expect($task->isPersonal())->toBeFalse();
 });
@@ -50,12 +53,14 @@ test('tasks with teams are not considered personal', function () {
 test('visible to scope hides personal tasks from non assignees', function () {
     $viewer = User::factory()->create();
     $assignee = User::factory()->create();
+    $team = Team::factory()->create();
 
     $personalTask = Task::query()->create(['title' => 'Personal task']);
+    $personalTask->setOwner($assignee);
     $personalTask->syncAssignees([$assignee]);
 
     $teamTask = Task::query()->create(['title' => 'Team task']);
-    $teamTask->syncTeams([Team::factory()->create()]);
+    $teamTask->setOwner($team);
 
     $visibleIds = Task::query()->visibleTo($viewer)->pluck('id');
 
@@ -71,6 +76,7 @@ test('users cannot update personal tasks they cannot see', function () {
     $nextStatus = Status::factory()->create(['slug' => 'in-progress', 'is_closed' => false]);
 
     $task = Task::query()->create(['title' => 'Private task']);
+    $task->setOwner($assignee);
     $task->syncAssignees([$assignee]);
     $task->setStatus($openStatus);
 
@@ -92,6 +98,7 @@ test('non assignees cannot update visible team tasks', function () {
     $nextStatus = Status::factory()->create(['slug' => 'in-progress', 'is_closed' => false]);
 
     $task = Task::query()->create(['title' => 'Shared team task']);
+    $task->setOwner($team);
     $task->syncAssignees([$assignee]);
     $task->syncTeams([$team]);
     $task->setStatus($openStatus);

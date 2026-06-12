@@ -46,15 +46,31 @@ class TaskFactory extends Factory
             }
 
             $assigneeCount = fake()->numberBetween(1, 3);
-            $teamCount = fake()->numberBetween(1, 2);
+            $assignees = User::query()->inRandomOrder()->limit($assigneeCount)->get();
 
-            $task->assignees()->attach(
-                User::query()->inRandomOrder()->limit($assigneeCount)->pluck('id'),
-            );
+            $task->assignees()->attach($assignees->pluck('id'));
 
-            $task->teams()->attach(
-                Team::query()->inRandomOrder()->limit($teamCount)->pluck('id'),
-            );
+            if (fake()->boolean(70)) {
+                $teamCount = fake()->numberBetween(1, 2);
+                $teams = Team::query()->inRandomOrder()->limit($teamCount)->get();
+
+                $task->teams()->attach($teams->pluck('id'));
+                $task->setOwner($teams->first());
+
+                return;
+            }
+
+            $task->setOwner($assignees->first());
+        });
+    }
+
+    /**
+     * @return $this
+     */
+    public function ownedBy(User|Team $owner): static
+    {
+        return $this->afterCreating(function (Task $task) use ($owner): void {
+            $task->setOwner($owner);
         });
     }
 }

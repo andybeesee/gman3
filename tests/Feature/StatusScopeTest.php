@@ -43,10 +43,12 @@ test('dashboard excludes tasks with closed statuses', function () {
     $closedStatus = Status::factory()->closed()->create(['slug' => 'completed']);
 
     $openTask = Task::query()->create(['title' => 'Open task']);
+    $openTask->setOwner($user);
     $openTask->syncAssignees([$user]);
     $openTask->setStatus($openStatus);
 
     $closedTask = Task::query()->create(['title' => 'Closed task']);
+    $closedTask->setOwner($user);
     $closedTask->syncAssignees([$user]);
     $closedTask->setStatus($closedStatus);
 

@@ -21,11 +21,13 @@ test('authenticated users can view team tasks across the organization', function
     $closedStatus = Status::factory()->closed()->create(['slug' => 'completed']);
 
     $openTask = Task::query()->create(['title' => 'Open org task']);
+    $openTask->setOwner($team);
     $openTask->syncAssignees([$assignee]);
     $openTask->syncTeams([$team]);
     $openTask->setStatus($openStatus);
 
     $closedTask = Task::query()->create(['title' => 'Closed org task']);
+    $closedTask->setOwner($team);
     $closedTask->syncAssignees([$assignee]);
     $closedTask->syncTeams([$team]);
     $closedTask->setStatus($closedStatus);
@@ -45,6 +47,7 @@ test('task index shows team tasks not assigned to the current user', function ()
     $team = Team::factory()->create(['name' => 'Design Team']);
 
     $task = Task::query()->create(['title' => 'Someone else task']);
+    $task->setOwner($team);
     $task->syncAssignees([$assignee]);
     $task->syncTeams([$team]);
     $task->setStatus(Status::factory()->create(['slug' => 'pending', 'is_closed' => false]));

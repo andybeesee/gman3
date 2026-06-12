@@ -105,7 +105,7 @@
                         </li>
                         <li class="app-sidebar__menu-item">
                             <a
-                                href="#"
+                                href="{{ route('teams.index') }}"
                                 class="app-sidebar__menu-button"
                                 data-sidebar-tooltip="{{ __('Teams') }}"
                             >

@@ -37,3 +37,21 @@ test('morph map resolves task aliases back to task models', function () {
 
     expect($resolvedTask?->is($task))->toBeTrue();
 });
+
+test('task owner morph stores the owner alias', function () {
+    $user = User::factory()->create();
+    $team = Team::factory()->create();
+
+    $userTask = Task::query()->create(['title' => 'User owned task']);
+    $userTask->setOwner($user);
+
+    $teamTask = Task::query()->create(['title' => 'Team owned task']);
+    $teamTask->setOwner($team);
+
+    expect(DB::table('tasks')->where('id', $userTask->id)->value('owner_type'))
+        ->toBe('user')
+        ->and(DB::table('tasks')->where('id', $teamTask->id)->value('owner_type'))
+        ->toBe('team')
+        ->and($userTask->fresh()->owner?->is($user))->toBeTrue()
+        ->and($teamTask->fresh()->owner?->is($team))->toBeTrue();
+});

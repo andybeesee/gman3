@@ -118,6 +118,12 @@
     white-space: nowrap;
 }
 
+.task-table__numeric {
+    color: var(--color-text);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
 .task-table__assignees,
 .task-table__teams {
     max-width: 14rem;
