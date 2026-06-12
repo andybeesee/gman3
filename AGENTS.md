@@ -108,13 +108,6 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 
 - Laravel can be deployed using [Laravel Cloud](https://cloud.laravel.com/), which is the fastest way to deploy and scale production Laravel applications.
 
-=== herd rules ===
-
-# Laravel Herd
-
-- The application is served by Laravel Herd at `https?://[kebab-case-project-dir].test`. Use the `get-absolute-url` tool to generate valid URLs. Never run commands to serve the site. It is always available.
-- Use the `herd` CLI to manage services, PHP versions, and sites (e.g. `herd sites`, `herd services:start <service>`, `herd php:list`). Run `herd list` to discover all available commands.
-
 === laravel/core rules ===
 
 # Do Things the Laravel Way
@@ -145,30 +138,13 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 
 - If you receive an "Illuminate\Foundation\ViteException: Unable to locate file in Vite manifest" error, you can run `npm run build` or ask the user to run `npm run dev` or `composer run dev`.
 
-=== frontend/core rules ===
+=== livewire/core rules ===
 
-# Frontend UI
+# Livewire
 
-Livewire is installed but should be used **sparingly**. Default to simpler tools first and reach for Livewire only when server-driven reactivity clearly reduces complexity.
-
-## Stack priority (prefer in this order)
-
-1. **Blade components** — primary building block for reusable UI. Prefer anonymous/class-based Blade components over one-off markup duplication.
-2. **Inline JavaScript** — for light, page-local interactivity (toggles, simple DOM updates, form helpers).
-3. **Alpine.js** — when inline JS becomes hard to follow; use for modest client-side state and DOM behavior. Livewire 4 bundles Alpine — do not add a separate Alpine install.
-4. **Livewire** — last resort for genuinely dynamic, server-backed UI (real-time validation, multi-step wizards, complex tables with server state). Do not reach for Livewire for static pages or interactions that Blade + a few lines of JS can handle.
-
-## Livewire (when you do use it)
-
-- Keep state server-side; validate and authorize in actions as you would in HTTP requests.
-- Follow existing component conventions in the project before introducing a new format.
-- Activate the `livewire-development` skill when working on Livewire components.
-
-## Styling
-
-- Use **Tailwind** for margin, spacing, and layout utilities only.
-- Use **custom CSS variables and stylesheets** for colors, typography, components, and visual design (`resources/css/variables.css`, `resources/css/*.css`).
-- Load **Atkinson Hyperlegible** and **Font Awesome** from `public/css/` and `public/webfonts/`.
+- Livewire allow to build dynamic, reactive interfaces in PHP without writing JavaScript.
+- You can use Alpine.js for client-side interactions instead of JavaScript frameworks.
+- Keep state server-side so the UI reflects it. Validate and authorize in actions as you would in HTTP requests.
 
 === pint/core rules ===
 
