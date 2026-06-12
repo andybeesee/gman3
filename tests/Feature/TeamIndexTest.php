@@ -13,12 +13,12 @@ test('guests cannot view the team index', function () {
         ->assertRedirect(route('login'));
 });
 
-test('authenticated users can view teams with member and open task counts', function () {
+test('authenticated users can view teams they belong to with member and open task counts', function () {
     $user = User::factory()->create();
     $memberOne = User::factory()->create();
     $memberTwo = User::factory()->create();
     $team = Team::factory()->create(['name' => 'Platform Team']);
-    $team->members()->attach([$memberOne->id, $memberTwo->id]);
+    $team->members()->attach([$user->id, $memberOne->id, $memberTwo->id]);
 
     $openStatus = Status::factory()->create(['slug' => 'pending', 'is_closed' => false]);
     $closedStatus = Status::factory()->closed()->create(['slug' => 'completed']);
@@ -42,9 +42,9 @@ test('authenticated users can view teams with member and open task counts', func
         ->assertDontSee('Closed team task');
 });
 
-test('team index shows zero counts for teams without members or open tasks', function () {
+test('team index shows public teams to every authenticated user', function () {
     $user = User::factory()->create();
-    Team::factory()->create(['name' => 'Empty Team']);
+    Team::factory()->public()->create(['name' => 'Empty Team']);
 
     $this->actingAs($user)
         ->get(route('teams.index'))

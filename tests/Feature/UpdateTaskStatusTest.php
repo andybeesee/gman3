@@ -80,8 +80,9 @@ test('assignee reopening a task clears completion details', function () {
 
 test('users who are not assignees cannot update task status', function () {
     $assignee = User::factory()->create();
-    $otherUser = User::factory()->create();
+    $teamMember = User::factory()->create();
     $team = Team::factory()->create();
+    $team->members()->attach($teamMember);
     $openStatus = Status::factory()->create(['slug' => 'pending', 'is_closed' => false]);
     $nextStatus = Status::factory()->create(['slug' => 'in-progress', 'is_closed' => false]);
 
@@ -91,7 +92,7 @@ test('users who are not assignees cannot update task status', function () {
     $task->syncTeams([$team]);
     $task->setStatus($openStatus);
 
-    $this->actingAs($otherUser)
+    $this->actingAs($teamMember)
         ->patch(route('tasks.status.update', $task), [
             'status_id' => $nextStatus->id,
         ])

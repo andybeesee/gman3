@@ -20,12 +20,7 @@ class TaskPolicy
      */
     public function view(User $user, Task $task): bool
     {
-        if (! $task->isPersonal()) {
-            return true;
-        }
-
-        return $task->owner_id === $user->id
-            || $task->assignees()->whereKey($user->id)->exists();
+        return $task->isVisibleTo($user);
     }
 
     /**

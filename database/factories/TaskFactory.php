@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\Visibility;
 use App\Models\Project;
 use App\Models\Status;
 use App\Models\Task;
@@ -32,6 +33,8 @@ class TaskFactory extends Factory
             'description' => fake()->optional(0.6)->paragraph(),
             'start_date' => $startDate,
             'due_date' => $dueDate,
+            'visibility' => fake()->boolean(20) ? Visibility::Public : Visibility::Private,
+            'created_by_user_id' => null,
         ];
     }
 
@@ -58,12 +61,36 @@ class TaskFactory extends Factory
 
                 $task->teams()->attach($teams->pluck('id'));
                 $task->setOwner($teams->first());
+                $this->assignCreator($task);
 
                 return;
             }
 
             $task->setOwner($assignees->first());
+            $this->assignCreator($task);
         });
+    }
+
+    protected function assignCreator(Task $task): void
+    {
+        if ($task->created_by_user_id !== null) {
+            return;
+        }
+
+        $creatorId = match ($task->owner_type) {
+            'user' => $task->owner_id,
+            'team' => $task->assignees()->value('users.id'),
+            'project' => Project::query()->whereKey($task->owner_id)->value('created_by_user_id'),
+            default => $task->assignees()->value('users.id'),
+        };
+
+        if ($creatorId === null) {
+            $creatorId = User::query()->inRandomOrder()->value('id');
+        }
+
+        if ($creatorId !== null) {
+            $task->forceFill(['created_by_user_id' => $creatorId])->save();
+        }
     }
 
     /**
@@ -90,6 +117,15 @@ class TaskFactory extends Factory
             if ($assignees->isNotEmpty()) {
                 $task->syncAssignees($assignees);
             }
+
+            $task->forceFill([
+                'visibility' => fake()->boolean(90)
+                    ? $project->visibility
+                    : (fake()->boolean(50) ? Visibility::Public : Visibility::Private),
+                'created_by_user_id' => $project->created_by_user_id
+                    ?? $assignees->first()?->id
+                    ?? User::query()->inRandomOrder()->value('id'),
+            ])->save();
         });
     }
 
@@ -98,7 +134,7 @@ class TaskFactory extends Factory
      */
     protected function assigneesForProject(Project $project): Collection
     {
-        if ($project->isPersonallyOwned() && $project->owner_user_id !== null) {
+        if ($project->isUserOwned() && $project->owner_user_id !== null) {
             return User::query()->whereKey($project->owner_user_id)->get();
         }
 

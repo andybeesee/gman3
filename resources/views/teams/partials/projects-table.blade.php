@@ -40,10 +40,13 @@
                         @endif
                     </td>
                     <td>
-                        @if ($project->isPersonallyOwned())
+                        @if ($project->isUserOwned())
                             <span>{{ $project->ownerUser?->name ?? __('Personal') }}</span>
                         @else
                             <span>{{ __('Team') }}</span>
+                        @endif
+                        @if ($project->isPrivate())
+                            <span class="task-table__muted"> · {{ __('Private') }}</span>
                         @endif
                     </td>
                     @if ($showTeams)

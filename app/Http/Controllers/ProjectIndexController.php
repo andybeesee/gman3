@@ -19,7 +19,11 @@ class ProjectIndexController extends Controller
         $this->authorize('viewAny', Project::class);
 
         $projects = Project::query()
-            ->with(['currentStatusChange.status', 'teams', 'ownerUser'])
+            ->with([
+                'currentStatusChange.status',
+                'teams' => fn ($query) => $query->visibleTo($request->user()),
+                'ownerUser',
+            ])
             ->withCount('ownedTasks')
             ->orderByRaw('due_date IS NULL')
             ->orderBy('due_date')

@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\Visibility;
+use App\Models\Concerns\HasTeamVisibility;
+use App\Models\Concerns\HasVisibility;
 use Database\Factories\TeamFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,11 +12,28 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
-#[Fillable(['name', 'slug'])]
+#[Fillable(['name', 'slug', 'visibility', 'created_by_user_id'])]
 class Team extends Model
 {
     /** @use HasFactory<TeamFactory> */
-    use HasFactory;
+    use HasFactory, HasTeamVisibility, HasVisibility {
+        HasTeamVisibility::applyModelVisibilityAccess insteadof HasVisibility;
+    }
+
+    /**
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'visibility' => Visibility::Private,
+    ];
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return $this->visibilityCasts();
+    }
 
     /**
      * @return MorphToMany<Task, $this>

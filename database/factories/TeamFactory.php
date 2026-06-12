@@ -2,7 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Enums\Visibility;
 use App\Models\Team;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -43,6 +45,19 @@ class TeamFactory extends Factory
         return [
             'name' => $name,
             'slug' => Str::slug($name),
+            'visibility' => Visibility::Private,
+            'created_by_user_id' => null,
         ];
+    }
+
+    /**
+     * @return $this
+     */
+    public function public(?User $creator = null): static
+    {
+        return $this->state(fn (): array => [
+            'visibility' => Visibility::Public,
+            'created_by_user_id' => $creator?->id,
+        ]);
     }
 }

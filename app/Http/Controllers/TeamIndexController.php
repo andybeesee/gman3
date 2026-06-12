@@ -19,6 +19,7 @@ class TeamIndexController extends Controller
         $this->authorize('viewAny', Team::class);
 
         $teams = Team::query()
+            ->visibleTo($request->user())
             ->withCount([
                 'members',
                 'tasks as open_tasks_count' => fn ($query) => $query->whereStatusOpen(),

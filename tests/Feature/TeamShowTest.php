@@ -103,7 +103,7 @@ test('tasks tab lists all visible tasks for the team', function () {
         ->assertSee('Closed checklist item');
 });
 
-test('members tab shows an edit form for team members', function () {
+test('members tab shows add and remove controls for team members', function () {
     $member = User::factory()->create(['name' => 'Jamie Lee']);
     $otherUser = User::factory()->create(['name' => 'Alex Rivera']);
     $team = Team::factory()->create(['name' => 'Platform Team']);
@@ -112,12 +112,58 @@ test('members tab shows an edit form for team members', function () {
     $this->actingAs($member)
         ->get(route('teams.show', ['team' => $team, 'tab' => 'members']))
         ->assertSuccessful()
-        ->assertSee(__('Save members'))
+        ->assertSee(__('Name'))
+        ->assertSee(__('Email'))
+        ->assertSee(__('Open tasks here'))
+        ->assertSee(__('Add'))
+        ->assertSee(__('Remove'))
         ->assertSee('Jamie Lee')
-        ->assertSee('Alex Rivera');
+        ->assertSee('Alex Rivera', false);
 });
 
-test('users who are not team members do not see team owned projects on the dashboard', function () {
+test('members tab shows open team task counts per member', function () {
+    $member = User::factory()->create(['name' => 'Jamie Lee', 'email' => 'jamie@example.com']);
+    $otherMember = User::factory()->create(['name' => 'Alex Kim', 'email' => 'alex@example.com']);
+    $team = Team::factory()->create(['name' => 'Platform Team']);
+    $team->members()->attach([$member->id, $otherMember->id]);
+
+    $openStatus = Status::factory()->create(['slug' => 'pending', 'is_closed' => false]);
+    $closedStatus = Status::factory()->closed()->create(['slug' => 'completed']);
+
+    $memberOpenTask = Task::query()->create(['title' => 'Jamie open task']);
+    $memberOpenTask->setOwner($team);
+    $memberOpenTask->syncTeams([$team]);
+    $memberOpenTask->syncAssignees([$member]);
+    $memberOpenTask->setStatus($openStatus);
+
+    $memberClosedTask = Task::query()->create(['title' => 'Jamie closed task']);
+    $memberClosedTask->setOwner($team);
+    $memberClosedTask->syncTeams([$team]);
+    $memberClosedTask->syncAssignees([$member]);
+    $memberClosedTask->setStatus($closedStatus);
+
+    $otherMemberTask = Task::query()->create(['title' => 'Alex open task']);
+    $otherMemberTask->setOwner($team);
+    $otherMemberTask->syncTeams([$team]);
+    $otherMemberTask->syncAssignees([$otherMember]);
+    $otherMemberTask->setStatus($openStatus);
+
+    $this->actingAs($member)
+        ->get(route('teams.show', ['team' => $team, 'tab' => 'members']))
+        ->assertSuccessful()
+        ->assertSee('jamie@example.com')
+        ->assertSee('alex@example.com')
+        ->assertSeeInOrder([
+            'Jamie Lee',
+            'jamie@example.com',
+            '1',
+            'Alex Kim',
+            'alex@example.com',
+            '1',
+        ]);
+});
+
+test('users who are not team members cannot view private teams', function () {
     $member = User::factory()->create(['name' => 'Team Member']);
     $viewer = User::factory()->create();
     $team = Team::factory()->create(['name' => 'Platform Team']);
@@ -129,14 +175,12 @@ test('users who are not team members do not see team owned projects on the dashb
 
     $this->actingAs($viewer)
         ->get(route('teams.show', $team))
-        ->assertSuccessful()
-        ->assertSee('Team Member')
-        ->assertDontSee('Hidden platform rollout');
+        ->assertNotFound();
 });
 
-test('projects tab shows an empty state when no visible projects exist', function () {
+test('projects tab shows an empty state on public teams without projects', function () {
     $user = User::factory()->create();
-    $team = Team::factory()->create(['name' => 'Empty Team']);
+    $team = Team::factory()->public()->create(['name' => 'Empty Team']);
 
     $this->actingAs($user)
         ->get(route('teams.show', ['team' => $team, 'tab' => 'projects']))

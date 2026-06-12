@@ -4,11 +4,15 @@ namespace Database\Seeders;
 
 use App\Models\Status;
 use App\Models\Task;
+use App\Models\Team;
 use App\Models\User;
+use Database\Seeders\Concerns\SeedsVisibilityGrants;
 use Illuminate\Database\Seeder;
 
 class TaskSeeder extends Seeder
 {
+    use SeedsVisibilityGrants;
+
     private const TARGET_TASK_COUNT = 1000;
 
     /**
@@ -22,7 +26,16 @@ class TaskSeeder extends Seeder
             return;
         }
 
+        $users = User::query()->get();
+        $teams = Team::query()->get();
+
         Task::factory()->count($tasksToCreate)->create();
+
+        Task::query()
+            ->latest('id')
+            ->limit($tasksToCreate)
+            ->get()
+            ->each(fn (Task $task) => $this->maybeSeedVisibilityGrants($task, $users, $teams));
 
         $this->seedDateChangeHistory();
         $this->seedStatusChangeHistory();

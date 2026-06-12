@@ -88,7 +88,7 @@ class TeamShowController extends Controller
                 ->limit(self::DASHBOARD_LIMIT)
                 ->get(),
             'statuses' => Status::query()->orderBy('sort_order')->get(),
-            'users' => collect(),
+            'nonMembers' => collect(),
             'projects' => new LengthAwarePaginator([], 0, 50),
             'tasks' => new LengthAwarePaginator([], 0, 50),
         ];
@@ -100,8 +100,18 @@ class TeamShowController extends Controller
     private function membersTabData(Team $team): array
     {
         return [
-            'members' => $team->members()->orderBy('name')->get(),
-            'users' => User::query()->orderBy('name')->get(),
+            'members' => $team->members()
+                ->withCount([
+                    'assignedTasks as open_team_tasks_count' => fn ($query) => $query
+                        ->whereStatusOpen()
+                        ->forTeam($team),
+                ])
+                ->orderBy('name')
+                ->get(),
+            'nonMembers' => User::query()
+                ->whereDoesntHave('teams', fn ($query) => $query->whereKey($team->id))
+                ->orderBy('name')
+                ->get(),
             'activeProjects' => collect(),
             'activeTasks' => collect(),
             'statuses' => collect(),
@@ -126,7 +136,7 @@ class TeamShowController extends Controller
 
         return [
             'members' => collect(),
-            'users' => collect(),
+            'nonMembers' => collect(),
             'activeProjects' => collect(),
             'activeTasks' => collect(),
             'statuses' => collect(),
@@ -150,7 +160,7 @@ class TeamShowController extends Controller
 
         return [
             'members' => collect(),
-            'users' => collect(),
+            'nonMembers' => collect(),
             'activeProjects' => collect(),
             'activeTasks' => collect(),
             'statuses' => Status::query()->orderBy('sort_order')->get(),

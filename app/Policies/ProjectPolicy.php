@@ -20,10 +20,6 @@ class ProjectPolicy
      */
     public function view(User $user, Project $project): bool
     {
-        if ($project->isPersonallyOwned()) {
-            return $project->owner_user_id === $user->id;
-        }
-
-        return $project->teams()->whereHas('members', fn ($query) => $query->whereKey($user->id))->exists();
+        return $project->isVisibleTo($user);
     }
 }

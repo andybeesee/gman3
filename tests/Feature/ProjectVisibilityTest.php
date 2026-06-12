@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\ProjectOwnership;
+use App\Enums\Visibility;
 use App\Models\Project;
 use App\Models\Status;
 use App\Models\Team;
@@ -9,11 +9,11 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-test('personally owned projects are only visible to the owner', function () {
+test('private user owned projects are only visible to the owner', function () {
     $owner = User::factory()->create();
     $otherUser = User::factory()->create();
 
-    $project = Project::factory()->personallyOwnedBy($owner)->create([
+    $project = Project::factory()->privateForUser($owner)->create([
         'title' => 'Private project',
     ]);
     $project->setStatus(Status::factory()->create(['slug' => 'pending', 'is_closed' => false]));
@@ -23,20 +23,19 @@ test('personally owned projects are only visible to the owner', function () {
 
     expect($ownerVisibleIds)->toContain($project->id)
         ->and($otherVisibleIds)->not->toContain($project->id)
-        ->and($project->ownership)->toBe(ProjectOwnership::User);
+        ->and($project->visibility)->toBe(Visibility::Private);
 });
 
-test('team owned projects are visible to members of associated teams', function () {
+test('private team owned projects are visible to members of associated teams', function () {
     $member = User::factory()->create();
     $outsider = User::factory()->create();
     $team = Team::factory()->create();
     $team->members()->attach($member);
 
-    $project = Project::factory()->teamOwned()->create([
+    $project = Project::factory()->privateForTeam()->create([
         'title' => 'Shared project',
     ]);
     $project->syncTeams([$team]);
-    $team->members()->sync([$member->id]);
     $project->setStatus(Status::factory()->create(['slug' => 'pending', 'is_closed' => false]));
 
     $memberVisibleIds = Project::query()->visibleTo($member)->pluck('id');
@@ -44,14 +43,46 @@ test('team owned projects are visible to members of associated teams', function 
 
     expect($memberVisibleIds)->toContain($project->id)
         ->and($outsiderVisibleIds)->not->toContain($project->id)
-        ->and($project->ownership)->toBe(ProjectOwnership::Team);
+        ->and($project->visibility)->toBe(Visibility::Private);
 });
 
-test('project policy mirrors ownership visibility rules', function () {
+test('public projects are visible to every authenticated user', function () {
+    $creator = User::factory()->create();
+    $viewer = User::factory()->create();
+
+    $project = Project::factory()->public($creator)->create([
+        'title' => 'Company wide project',
+    ]);
+
+    expect(Project::query()->visibleTo($viewer)->pluck('id'))->toContain($project->id)
+        ->and($viewer->can('view', $project))->toBeTrue();
+});
+
+test('private resources can grant access to other users and teams', function () {
+    $owner = User::factory()->create();
+    $grantedUser = User::factory()->create();
+    $grantedMember = User::factory()->create();
+    $outsider = User::factory()->create();
+    $team = Team::factory()->create();
+    $team->members()->attach($grantedMember);
+
+    $project = Project::factory()->privateForUser($owner)->create([
+        'title' => 'Shared privately',
+    ]);
+
+    $project->grantAccessTo($grantedUser);
+    $project->grantAccessTo($team);
+
+    expect($project->isVisibleTo($grantedUser))->toBeTrue()
+        ->and($project->isVisibleTo($grantedMember))->toBeTrue()
+        ->and($project->isVisibleTo($outsider))->toBeFalse();
+});
+
+test('project policy mirrors visibility rules', function () {
     $owner = User::factory()->create();
     $otherUser = User::factory()->create();
 
-    $project = Project::factory()->personallyOwnedBy($owner)->create();
+    $project = Project::factory()->privateForUser($owner)->create();
 
     expect($owner->can('view', $project))->toBeTrue()
         ->and($otherUser->can('view', $project))->toBeFalse();
@@ -61,7 +92,7 @@ test('projects store status changes using the project morph alias', function () 
     $owner = User::factory()->create();
     $status = Status::factory()->create(['slug' => 'pending', 'is_closed' => false]);
 
-    $project = Project::factory()->personallyOwnedBy($owner)->create();
+    $project = Project::factory()->privateForUser($owner)->create();
     $project->setStatus($status, $owner);
 
     expect($project->fresh()->status?->is($status))->toBeTrue()

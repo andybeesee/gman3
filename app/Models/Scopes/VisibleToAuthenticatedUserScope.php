@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 class VisibleToAuthenticatedUserScope implements Scope
 {
     /**
-     * Apply personal-task visibility rules for the authenticated user.
+     * Apply visibility rules for the authenticated user.
      */
     public function apply(Builder $builder, Model $model): void
     {

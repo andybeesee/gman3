@@ -1,13 +1,14 @@
 <?php
 
+use App\Http\Controllers\AddTeamMemberController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProjectIndexController;
 use App\Http\Controllers\ProjectShowController;
+use App\Http\Controllers\RemoveTeamMemberController;
 use App\Http\Controllers\TaskIndexController;
 use App\Http\Controllers\TeamIndexController;
 use App\Http\Controllers\TeamShowController;
 use App\Http\Controllers\UpdateTaskStatusController;
-use App\Http\Controllers\UpdateTeamMembersController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -21,6 +22,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/projects/{project}', ProjectShowController::class)->name('projects.show');
     Route::get('/teams', TeamIndexController::class)->name('teams.index');
     Route::get('/teams/{team}', TeamShowController::class)->name('teams.show');
-    Route::put('/teams/{team}/members', UpdateTeamMembersController::class)->name('teams.members.update');
+    Route::post('/teams/{team}/members', AddTeamMemberController::class)->name('teams.members.store');
+    Route::delete('/teams/{team}/members/{user}', RemoveTeamMemberController::class)->name('teams.members.destroy');
     Route::patch('/tasks/{task}/status', UpdateTaskStatusController::class)->name('tasks.status.update');
 });

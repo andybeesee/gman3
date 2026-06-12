@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Enums\ProjectOwnership;
+use App\Enums\Visibility;
 use App\Models\Project;
 use App\Models\Status;
 use App\Models\Team;
@@ -31,7 +31,8 @@ class ProjectFactory extends Factory
             'description' => fake()->optional(0.6)->paragraph(),
             'start_date' => $startDate,
             'due_date' => $dueDate,
-            'ownership' => ProjectOwnership::Team,
+            'visibility' => fake()->boolean(20) ? Visibility::Public : Visibility::Private,
+            'created_by_user_id' => null,
             'owner_user_id' => null,
         ];
     }
@@ -51,16 +52,25 @@ class ProjectFactory extends Factory
             $teams = Team::query()->inRandomOrder()->limit(fake()->numberBetween(1, 2))->get();
 
             $project->syncTeams($teams);
+
+            if ($project->created_by_user_id === null) {
+                $creator = User::query()->inRandomOrder()->first();
+
+                if ($creator !== null) {
+                    $project->forceFill(['created_by_user_id' => $creator->id])->save();
+                }
+            }
         });
     }
 
     /**
      * @return $this
      */
-    public function personallyOwnedBy(User $user): static
+    public function privateForUser(User $user): static
     {
         return $this->state(fn (): array => [
-            'ownership' => ProjectOwnership::User,
+            'visibility' => Visibility::Private,
+            'created_by_user_id' => $user->id,
             'owner_user_id' => $user->id,
         ])->afterCreating(function (Project $project): void {
             $project->teams()->detach();
@@ -70,11 +80,43 @@ class ProjectFactory extends Factory
     /**
      * @return $this
      */
-    public function teamOwned(): static
+    public function privateForTeam(?User $creator = null): static
     {
         return $this->state(fn (): array => [
-            'ownership' => ProjectOwnership::Team,
+            'visibility' => Visibility::Private,
+            'created_by_user_id' => $creator?->id,
             'owner_user_id' => null,
         ]);
+    }
+
+    /**
+     * @return $this
+     */
+    public function public(?User $creator = null): static
+    {
+        return $this->state(fn (): array => [
+            'visibility' => Visibility::Public,
+            'created_by_user_id' => $creator?->id,
+        ]);
+    }
+
+    /**
+     * @return $this
+     *
+     * @deprecated Use privateForUser() instead.
+     */
+    public function personallyOwnedBy(User $user): static
+    {
+        return $this->privateForUser($user);
+    }
+
+    /**
+     * @return $this
+     *
+     * @deprecated Use privateForTeam() instead.
+     */
+    public function teamOwned(?User $creator = null): static
+    {
+        return $this->privateForTeam($creator);
     }
 }

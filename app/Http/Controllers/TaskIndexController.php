@@ -20,7 +20,11 @@ class TaskIndexController extends Controller
         $this->authorize('viewAny', Task::class);
 
         $tasks = Task::query()
-            ->with(['currentStatusChange.status', 'assignees', 'teams'])
+            ->with([
+                'currentStatusChange.status',
+                'assignees',
+                'teams' => fn ($query) => $query->visibleTo($request->user()),
+            ])
             ->orderByRaw('due_date IS NULL')
             ->orderBy('due_date')
             ->latest('id')

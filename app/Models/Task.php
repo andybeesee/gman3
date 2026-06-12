@@ -2,26 +2,37 @@
 
 namespace App\Models;
 
+use App\Enums\Visibility;
 use App\Models\Concerns\HasAssignees;
 use App\Models\Concerns\HasOwner;
 use App\Models\Concerns\HasSchedulableDates;
 use App\Models\Concerns\HasStatuses;
 use App\Models\Concerns\HasTeams;
+use App\Models\Concerns\HasVisibility;
 use App\Models\Scopes\VisibleToAuthenticatedUserScope;
 use Database\Factories\TaskFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 
-#[Fillable(['title', 'description', 'start_date', 'due_date', 'completed_at', 'completed_by_user_id'])]
+#[Fillable(['title', 'description', 'start_date', 'due_date', 'visibility', 'created_by_user_id', 'completed_at', 'completed_by_user_id'])]
 class Task extends Model
 {
     /** @use HasFactory<TaskFactory> */
-    use HasAssignees, HasFactory, HasOwner, HasSchedulableDates, HasStatuses, HasTeams {
+    use HasAssignees, HasFactory, HasOwner, HasSchedulableDates, HasStatuses, HasTeams, HasVisibility {
+        HasOwner::applyOwnershipVisibilityAccess insteadof HasVisibility;
         setStatus as protected setStatusFromTrait;
     }
+
+    /**
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'visibility' => Visibility::Private,
+    ];
 
     protected static function booted(): void
     {
@@ -34,6 +45,7 @@ class Task extends Model
     protected function casts(): array
     {
         return [
+            ...$this->visibilityCasts(),
             'start_date' => 'datetime',
             'due_date' => 'datetime',
             'completed_at' => 'datetime',
@@ -43,6 +55,18 @@ class Task extends Model
     public function getStatusAttribute(): ?Status
     {
         return $this->currentStatusChange?->status;
+    }
+
+    /**
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeForTeam(Builder $query, Team $team): Builder
+    {
+        return $query->whereIn(
+            $query->qualifyColumn('id'),
+            $team->tasks()->select('tasks.id'),
+        );
     }
 
     /**

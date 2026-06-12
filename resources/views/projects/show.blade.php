@@ -40,9 +40,14 @@
             </div>
 
             <div class="project-meta__item">
+                <dt>{{ __('Visibility') }}</dt>
+                <dd>{{ $project->isPublic() ? __('Public') : __('Private') }}</dd>
+            </div>
+
+            <div class="project-meta__item">
                 <dt>{{ __('Ownership') }}</dt>
                 <dd>
-                    @if ($project->isPersonallyOwned())
+                    @if ($project->isUserOwned())
                         {{ $project->ownerUser?->name ?? __('Personal') }}
                     @else
                         {{ __('Team') }}

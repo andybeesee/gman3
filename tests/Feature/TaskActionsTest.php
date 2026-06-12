@@ -28,6 +28,7 @@ test('non assignees do not see status change options for visible team tasks', fu
     $assignee = User::factory()->create();
     $viewer = User::factory()->create();
     $team = Team::factory()->create();
+    $team->members()->attach($viewer);
     $status = Status::factory()->create(['slug' => 'pending', 'is_closed' => false, 'name' => 'Pending review']);
 
     $task = Task::query()->create(['title' => 'Shared team task']);
