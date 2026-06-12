@@ -34,10 +34,13 @@
 
     --input-height: 2.75rem;
     --button-height: 2.75rem;
+
+    --sidebar-width: 16rem;
+    --sidebar-width-collapsed: 4.5rem;
 }
 
 @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not(.light) {
         --color-bg: #0f1419;
         --color-surface: #171d26;
         --color-surface-muted: #1c2430;
@@ -57,4 +60,25 @@
         --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px rgba(0, 0, 0, 0.35);
         --shadow-focus: 0 0 0 3px rgba(91, 141, 239, 0.25);
     }
+}
+
+:root.dark {
+    --color-bg: #0f1419;
+    --color-surface: #171d26;
+    --color-surface-muted: #1c2430;
+    --color-border: #2d3744;
+    --color-border-focus: #6b9bff;
+    --color-text: #edf2f7;
+    --color-text-muted: #9aa8b8;
+    --color-text-inverse: #0f1419;
+    --color-primary: #5b8def;
+    --color-primary-hover: #7aa3f5;
+    --color-primary-active: #9bb9f8;
+    --color-danger: #f28b82;
+    --color-danger-bg: #3a1f1f;
+    --color-success: #6dd58c;
+    --color-success-bg: #1a2e24;
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px rgba(0, 0, 0, 0.35);
+    --shadow-focus: 0 0 0 3px rgba(91, 141, 239, 0.25);
 }
