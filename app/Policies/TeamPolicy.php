@@ -32,6 +32,6 @@ class TeamPolicy
             return true;
         }
 
-        return $team->members()->whereKey($user->id)->exists();
+        return $team->isLeader($user);
     }
 }

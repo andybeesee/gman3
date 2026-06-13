@@ -2,6 +2,8 @@
 
 namespace App\Models\Concerns;
 
+use App\Enums\TeamRole;
+use App\Models\Pivots\Teamable;
 use App\Models\Team;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
@@ -12,7 +14,10 @@ trait HasTeams
      */
     public function teams(): MorphToMany
     {
-        return $this->morphToMany(Team::class, 'teamable');
+        return $this->morphToMany(Team::class, 'teamable')
+            ->using(Teamable::class)
+            ->withPivot('role')
+            ->withTimestamps();
     }
 
     public function syncTeams(iterable $teams): void
@@ -22,5 +27,20 @@ trait HasTeams
             ->all();
 
         $this->teams()->sync($teamIds);
+    }
+
+    public function teamRole(Team $team): ?TeamRole
+    {
+        /** @var Team|null $membership */
+        $membership = $this->teams()
+            ->whereKey($team->id)
+            ->first();
+
+        return $membership?->pivot?->role;
+    }
+
+    public function isTeamLeader(Team $team): bool
+    {
+        return $this->teamRole($team) === TeamRole::Leader;
     }
 }

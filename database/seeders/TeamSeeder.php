@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\TeamRole;
 use App\Enums\Visibility;
 use App\Models\Team;
 use App\Models\User;
@@ -55,9 +56,21 @@ class TeamSeeder extends Seeder
         $maxTeamsPerUser = min(5, $teams->count());
 
         foreach ($users as $user) {
-            $user->syncTeams(
-                $teams->random(fake()->numberBetween(1, $maxTeamsPerUser)),
-            );
+            $assignedTeams = $teams->random(fake()->numberBetween(1, $maxTeamsPerUser));
+
+            foreach ($assignedTeams as $team) {
+                $team->addMember($user, TeamRole::Member);
+            }
+        }
+
+        foreach ($teams as $team) {
+            $leader = $team->members()->inRandomOrder()->first();
+
+            if ($leader !== null) {
+                $team->members()->updateExistingPivot($leader->id, [
+                    'role' => TeamRole::Leader->value,
+                ]);
+            }
         }
     }
 

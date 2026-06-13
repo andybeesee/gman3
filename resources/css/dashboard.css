@@ -678,6 +678,24 @@
     gap: 1.5rem;
 }
 
+.team-member-role-form {
+    margin: 0;
+}
+
+.team-member-role-form__select {
+    min-width: 9rem;
+}
+
+[data-team-member-row].is-busy {
+    opacity: 0.6;
+}
+
+[data-team-members-panel-error][hidden],
+[data-team-member-error][hidden],
+[data-team-members-empty][hidden] {
+    display: none;
+}
+
 .hierarchy-supervisor {
     display: flex;
     flex-direction: column;

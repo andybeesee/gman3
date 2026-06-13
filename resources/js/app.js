@@ -1,3 +1,5 @@
+import { initTeamMembers } from './team-members';
+
 const THEME_STORAGE_KEY = 'theme';
 const SIDEBAR_STORAGE_KEY = 'sidebar-collapsed';
 
@@ -236,6 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initTaskActionMenus();
     initPagination();
+    initTeamMembers();
 
     document.addEventListener('click', (event) => {
         if (! event.target.closest('[data-task-actions]')) {

@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\TeamRole;
 use App\Enums\Visibility;
 use App\Models\Concerns\HasTeamVisibility;
 use App\Models\Concerns\HasVisibility;
+use App\Models\Pivots\Teamable;
 use Database\Factories\TeamFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -57,7 +59,40 @@ class Team extends Model
      */
     public function members(): MorphToMany
     {
-        return $this->morphedByMany(User::class, 'teamable');
+        return $this->morphedByMany(User::class, 'teamable')
+            ->using(Teamable::class)
+            ->withPivot('role')
+            ->withTimestamps();
+    }
+
+    public function addMember(User $user, TeamRole $role = TeamRole::Member): void
+    {
+        $this->members()->syncWithoutDetaching([
+            $user->id => ['role' => $role->value],
+        ]);
+    }
+
+    public function isLeader(User $user): bool
+    {
+        return $this->members()
+            ->whereKey($user->id)
+            ->wherePivot('role', TeamRole::Leader->value)
+            ->exists();
+    }
+
+    public function roleFor(User $user): ?TeamRole
+    {
+        /** @var User|null $member */
+        $member = $this->members()->whereKey($user->id)->first();
+
+        return $member?->pivot?->role;
+    }
+
+    public function leaderCount(): int
+    {
+        return $this->members()
+            ->wherePivot('role', TeamRole::Leader->value)
+            ->count();
     }
 
     /**

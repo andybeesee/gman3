@@ -9,28 +9,36 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\Enum;
 
-class RemoveTeamMemberController extends Controller
+class UpdateTeamMemberRoleController extends Controller
 {
     use AuthorizesRequests;
 
     /**
-     * Remove a user from the given team.
+     * Update the team role for the given member.
      */
     public function __invoke(Request $request, Team $team, User $member): JsonResponse|RedirectResponse
     {
         $this->authorize('updateMembers', $team);
 
+        $validated = $request->validate([
+            'role' => ['required', new Enum(TeamRole::class)],
+        ]);
+
         abort_unless($team->members()->whereKey($member->id)->exists(), 404);
 
-        if ($team->roleFor($member) === TeamRole::Leader && $team->leaderCount() <= 1) {
+        $newRole = TeamRole::from($validated['role']);
+        $currentRole = $team->roleFor($member);
+
+        if ($currentRole === TeamRole::Leader && $newRole === TeamRole::Member && $team->leaderCount() <= 1) {
             $message = __('Each team must keep at least one leader.');
 
             if ($request->wantsJson()) {
                 return response()->json([
                     'message' => $message,
                     'errors' => [
-                        'member' => [$message],
+                        'role' => [$message],
                     ],
                 ], 422);
             }
@@ -38,27 +46,27 @@ class RemoveTeamMemberController extends Controller
             return redirect()
                 ->route('teams.show', ['team' => $team, 'tab' => 'members'])
                 ->withErrors([
-                    'member' => $message,
+                    'role.'.$member->id => $message,
                 ]);
         }
 
-        $team->members()->detach($member);
+        $team->members()->updateExistingPivot($member->id, [
+            'role' => $newRole->value,
+        ]);
 
         if ($request->wantsJson()) {
             return response()->json([
-                'message' => __('Member removed.'),
-                'member_id' => $member->id,
-                'member_count' => $team->members()->count(),
-                'member_count_label' => trans_choice(
-                    ':count member|:count members',
-                    $team->members()->count(),
-                    ['count' => $team->members()->count()],
-                ),
+                'message' => __('Member role updated.'),
+                'member' => [
+                    'id' => $member->id,
+                    'role' => $newRole->value,
+                    'role_label' => $newRole->label(),
+                ],
             ]);
         }
 
         return redirect()
             ->route('teams.show', ['team' => $team, 'tab' => 'members'])
-            ->with('status', __('Member removed.'));
+            ->with('status', __('Member role updated.'));
     }
 }

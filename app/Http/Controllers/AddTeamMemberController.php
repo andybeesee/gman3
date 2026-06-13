@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\TeamRole;
 use App\Models\Team;
+use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 
 class AddTeamMemberController extends Controller
 {
@@ -26,9 +29,17 @@ class AddTeamMemberController extends Controller
                 'exists:users,id',
                 Rule::notIn($team->members()->pluck('users.id')),
             ],
+            'role' => ['nullable', new Enum(TeamRole::class)],
         ]);
 
-        $team->members()->attach($validated['user_id']);
+        $role = isset($validated['role'])
+            ? TeamRole::from($validated['role'])
+            : TeamRole::Member;
+
+        $team->addMember(
+            User::query()->findOrFail($validated['user_id']),
+            $role,
+        );
 
         return redirect()
             ->route('teams.show', ['team' => $team, 'tab' => 'members'])

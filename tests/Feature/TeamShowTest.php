@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\TeamRole;
 use App\Models\Project;
 use App\Models\Status;
 use App\Models\Task;
@@ -154,20 +155,22 @@ test('tasks tab shows the project for project owned tasks', function () {
         ->assertSee('Platform rollout');
 });
 
-test('members tab shows add and remove controls for team members', function () {
-    $member = User::factory()->create(['name' => 'Jamie Lee']);
-    $otherUser = User::factory()->forSupervisor($member)->create(['name' => 'Alex Rivera']);
+test('members tab shows add and remove controls for team leaders', function () {
+    $leader = User::factory()->create(['name' => 'Jamie Lee']);
+    $otherUser = User::factory()->forSupervisor($leader)->create(['name' => 'Alex Rivera']);
     $team = Team::factory()->create(['name' => 'Platform Team']);
-    $team->members()->attach($member);
+    $team->addMember($leader, TeamRole::Leader);
 
-    $this->actingAs($member)
+    $this->actingAs($leader)
         ->get(route('teams.show', ['team' => $team, 'tab' => 'members']))
         ->assertSuccessful()
         ->assertSee(__('Name'))
         ->assertSee(__('Email'))
+        ->assertSee(__('Role'))
         ->assertSee(__('Open tasks here'))
         ->assertSee(__('Add'))
         ->assertSee(__('Remove'))
+        ->assertSee(__('Team leader'))
         ->assertSee('Jamie Lee')
         ->assertSee('Alex Rivera', false);
 });
