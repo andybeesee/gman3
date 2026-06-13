@@ -37,9 +37,9 @@
                             <tr>
                                 <td class="task-table__title">
                                     <span class="task-table__title-content">
-                                        <span class="task-table__title-text" title="{{ $checklist->title }}">
+                                        <a href="{{ route('checklists.show', $checklist) }}" class="task-table__title-link task-table__title-text" title="{{ $checklist->title }}">
                                             {{ $checklist->title }}
-                                        </span>
+                                        </a>
                                         <x-visibility-indicator :resource="$checklist" />
                                     </span>
                                 </td>

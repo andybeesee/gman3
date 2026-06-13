@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AddTeamMemberController;
 use App\Http\Controllers\ChecklistIndexController;
+use App\Http\Controllers\ChecklistShowController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProjectIndexController;
 use App\Http\Controllers\ProjectShowController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\RemoveTeamMemberController;
 use App\Http\Controllers\TaskIndexController;
 use App\Http\Controllers\TeamIndexController;
 use App\Http\Controllers\TeamShowController;
+use App\Http\Controllers\UpdateChecklistTaskOrderController;
 use App\Http\Controllers\UpdateTaskStatusController;
 use App\Http\Controllers\UpdateTeamMemberRoleController;
 use App\Http\Controllers\UserIndexController;
@@ -22,6 +24,8 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
     Route::get('/checklists', ChecklistIndexController::class)->name('checklists.index');
+    Route::get('/checklists/{checklist}', ChecklistShowController::class)->name('checklists.show');
+    Route::patch('/checklists/{checklist}/tasks/order', UpdateChecklistTaskOrderController::class)->name('checklists.tasks.order.update');
     Route::get('/tasks', TaskIndexController::class)->name('tasks.index');
     Route::get('/projects', ProjectIndexController::class)->name('projects.index');
     Route::get('/projects/{project}', ProjectShowController::class)->name('projects.show');

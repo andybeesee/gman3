@@ -1,3 +1,4 @@
+import { initChecklistSortables } from './checklist-sortable';
 import { initTeamMembers } from './team-members';
 
 const THEME_STORAGE_KEY = 'theme';
@@ -238,6 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initTaskActionMenus();
     initPagination();
+    initChecklistSortables();
     initTeamMembers();
 
     document.addEventListener('click', (event) => {

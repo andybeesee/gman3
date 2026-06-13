@@ -71,6 +71,12 @@ class ChecklistFactory extends Factory
         return $this->afterCreating(function (Checklist $checklist) use ($owner): void {
             $checklist->setOwner($owner);
 
+            if ($owner instanceof User) {
+                $checklist->forceFill(['created_by_user_id' => $owner->id])->save();
+
+                return;
+            }
+
             if ($owner instanceof Project) {
                 $checklist->syncTeams($owner->teams);
                 $checklist->forceFill([
