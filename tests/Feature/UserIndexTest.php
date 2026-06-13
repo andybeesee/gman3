@@ -12,21 +12,21 @@ test('guests cannot view the user index', function () {
         ->assertRedirect(route('login'));
 });
 
-test('users only see themselves when they have no reports', function () {
+test('users can see coworkers on the user index', function () {
     $viewer = User::factory()->create(['name' => 'Isolated User']);
-    $other = User::factory()->create(['name' => 'Hidden User']);
+    $other = User::factory()->create(['name' => 'Visible User']);
 
     $this->actingAs($viewer)
         ->get(route('users.index'))
         ->assertSuccessful()
         ->assertSee('Isolated User')
-        ->assertDontSee('Hidden User');
+        ->assertSee('Visible User');
 });
 
-test('supervisors see themselves and all descendants on the user index', function () {
+test('user index includes all coworkers', function () {
     $roger = User::factory()->create(['name' => 'Roger']);
-    $don = User::factory()->forSupervisor($roger)->create(['name' => 'Don']);
-    $peggy = User::factory()->forSupervisor($don)->create(['name' => 'Peggy']);
+    $don = User::factory()->create(['name' => 'Don']);
+    $peggy = User::factory()->create(['name' => 'Peggy']);
     $stranger = User::factory()->create(['name' => 'Stranger']);
 
     $this->actingAs($roger)
@@ -35,7 +35,7 @@ test('supervisors see themselves and all descendants on the user index', functio
         ->assertSee('Roger')
         ->assertSee('Don')
         ->assertSee('Peggy')
-        ->assertDontSee('Stranger');
+        ->assertSee('Stranger');
 });
 
 test('user index shows open assigned task counts', function () {

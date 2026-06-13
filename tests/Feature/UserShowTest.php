@@ -15,13 +15,11 @@ test('guests cannot view a user profile', function () {
         ->assertRedirect(route('login'));
 });
 
-test('dashboard tab shows active projects tasks and direct reports', function () {
-    $supervisor = User::factory()->create(['name' => 'Roger']);
-    $user = User::factory()->forSupervisor($supervisor)->create([
+test('dashboard tab shows active visible projects and tasks', function () {
+    $user = User::factory()->create([
         'name' => 'Don',
         'email' => 'don@example.com',
     ]);
-    $report = User::factory()->forSupervisor($user)->create(['name' => 'Peggy']);
     $openStatus = Status::factory()->create(['slug' => 'pending', 'is_closed' => false, 'name' => 'Planning']);
     $closedStatus = Status::factory()->closed()->create(['slug' => 'completed']);
 
@@ -41,13 +39,12 @@ test('dashboard tab shows active projects tasks and direct reports', function ()
     $closedTask->syncAssignees([$user]);
     $closedTask->setStatus($closedStatus);
 
-    $this->actingAs($supervisor)
+    $this->actingAs($user)
         ->get(route('users.show', $user))
         ->assertSuccessful()
         ->assertSee(__('Dashboard'), false)
         ->assertSee('Don')
         ->assertSee('don@example.com')
-        ->assertSee('Peggy')
         ->assertSee('Don rollout')
         ->assertSee('Planning')
         ->assertSee('Prepare launch checklist')
@@ -55,18 +52,21 @@ test('dashboard tab shows active projects tasks and direct reports', function ()
         ->assertDontSee('Archived checklist item');
 });
 
-test('users cannot view another users projects tab when not in their reporting line', function () {
+test('users can view another users projects tab without seeing private projects', function () {
     $viewer = User::factory()->create();
     $user = User::factory()->create(['name' => 'Don']);
+    $privateProject = Project::factory()->privateForUser($user)->create(['title' => 'Private rollout']);
+    $privateProject->setStatus(Status::factory()->create(['slug' => 'pending', 'is_closed' => false]));
 
     $this->actingAs($viewer)
         ->get(route('users.show', ['user' => $user, 'tab' => 'projects']))
-        ->assertNotFound();
+        ->assertSuccessful()
+        ->assertSee(__('All projects'))
+        ->assertDontSee('Private rollout');
 });
 
-test('supervisor can view projects tab for a report', function () {
-    $supervisor = User::factory()->create();
-    $user = User::factory()->forSupervisor($supervisor)->create(['name' => 'Don']);
+test('projects tab lists visible projects for the user', function () {
+    $user = User::factory()->create(['name' => 'Don']);
     $openStatus = Status::factory()->create(['slug' => 'pending', 'is_closed' => false]);
 
     $openProject = Project::factory()->create(['title' => 'Open rollout', 'owner_user_id' => $user->id]);
@@ -75,7 +75,7 @@ test('supervisor can view projects tab for a report', function () {
     $closedProject = Project::factory()->create(['title' => 'Closed rollout', 'owner_user_id' => $user->id]);
     $closedProject->setStatus(Status::factory()->closed()->create(['slug' => 'completed']));
 
-    $this->actingAs($supervisor)
+    $this->actingAs($user)
         ->get(route('users.show', ['user' => $user, 'tab' => 'projects']))
         ->assertSuccessful()
         ->assertSee(__('All projects'))
@@ -84,8 +84,7 @@ test('supervisor can view projects tab for a report', function () {
 });
 
 test('tasks tab lists all related tasks for the user', function () {
-    $supervisor = User::factory()->create();
-    $user = User::factory()->forSupervisor($supervisor)->create(['name' => 'Don']);
+    $user = User::factory()->create(['name' => 'Don']);
     $openStatus = Status::factory()->create(['slug' => 'pending', 'is_closed' => false]);
     $closedStatus = Status::factory()->closed()->create(['slug' => 'completed']);
 
@@ -99,7 +98,7 @@ test('tasks tab lists all related tasks for the user', function () {
     $closedTask->syncAssignees([$user]);
     $closedTask->setStatus($closedStatus);
 
-    $this->actingAs($supervisor)
+    $this->actingAs($user)
         ->get(route('users.show', ['user' => $user, 'tab' => 'tasks']))
         ->assertSuccessful()
         ->assertSee(__('All tasks'))
@@ -107,11 +106,12 @@ test('tasks tab lists all related tasks for the user', function () {
         ->assertSee('Closed checklist item');
 });
 
-test('users who cannot see a profile receive not found', function () {
+test('users can view coworker profiles', function () {
     $viewer = User::factory()->create();
-    $other = User::factory()->create(['name' => 'Hidden User']);
+    $other = User::factory()->create(['name' => 'Visible User']);
 
     $this->actingAs($viewer)
         ->get(route('users.show', $other))
-        ->assertNotFound();
+        ->assertSuccessful()
+        ->assertSee('Visible User');
 });

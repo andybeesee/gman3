@@ -2,7 +2,7 @@
     <div class="dashboard-header">
         <h1 class="dashboard-title">{{ __('Users') }}</h1>
         <p class="dashboard-subtitle">
-            {{ __('People in your organization and reporting line.') }}
+            {{ __('People in your organization.') }}
         </p>
 
         @if (session('status'))
@@ -27,7 +27,6 @@
                         <tr>
                             <th scope="col">{{ __('Name') }}</th>
                             <th scope="col">{{ __('Email') }}</th>
-                            <th scope="col">{{ __('Reports') }}</th>
                             <th scope="col">{{ __('Open tasks') }}</th>
                         </tr>
                     </thead>
@@ -41,9 +40,6 @@
                                 </td>
                                 <td class="task-table__email">
                                     {{ $user->email }}
-                                </td>
-                                <td class="task-table__numeric">
-                                    {{ number_format($user->subordinates_count) }}
                                 </td>
                                 <td class="task-table__numeric">
                                     {{ number_format($user->open_tasks_count) }}

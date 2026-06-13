@@ -13,7 +13,7 @@
         @endif
     </div>
 
-    <x-user-tabs :user="$user" :tab="$tab" :show-hierarchy-tab="$showHierarchyTab" />
+    <x-user-tabs :user="$user" :tab="$tab" />
 
     @include('users.tabs.'.$tab)
 </x-layouts.app>

@@ -5,12 +5,9 @@ namespace App\Models\Concerns;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Collection;
 
 trait HasProjectOwnership
 {
-    use AppliesSupervisorVisibility;
-
     /**
      * @return BelongsTo<User, $this>
      */
@@ -56,17 +53,5 @@ trait HasProjectOwnership
     {
         $query->orWhere('owner_user_id', $user->id)
             ->orWhereHas('teams.members', fn (Builder $query) => $query->whereKey($user->id));
-
-        $this->applySupervisorVisibilityAccess($query, $user);
-    }
-
-    /**
-     * @param  Builder<static>  $query
-     * @param  Collection<int, int>  $descendantIds
-     */
-    protected function extendQueryForSupervisorDescendants(Builder $query, Collection $descendantIds): void
-    {
-        $query->orWhereIn('owner_user_id', $descendantIds)
-            ->orWhereIn('created_by_user_id', $descendantIds);
     }
 }

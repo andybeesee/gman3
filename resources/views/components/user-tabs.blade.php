@@ -1,4 +1,4 @@
-@props(['user', 'tab', 'showHierarchyTab' => false])
+@props(['user', 'tab'])
 
 @php
     $tabs = [
@@ -7,9 +7,6 @@
         'tasks' => __('Tasks'),
     ];
 
-    if ($showHierarchyTab) {
-        $tabs['hierarchy'] = __('Hierarchy');
-    }
 @endphp
 
 <nav class="team-tabs" aria-label="{{ __('User sections') }}">

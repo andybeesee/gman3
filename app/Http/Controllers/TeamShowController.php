@@ -110,7 +110,6 @@ class TeamShowController extends Controller
                 ->orderBy('name')
                 ->get(),
             'nonMembers' => User::query()
-                ->visibleTo($request->user())
                 ->whereDoesntHave('teams', fn ($query) => $query->whereKey($team->id))
                 ->orderBy('name')
                 ->get(),

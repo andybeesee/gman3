@@ -19,14 +19,6 @@ class UserPolicy
      */
     public function view(User $user, User $model): bool
     {
-        return $model->isVisibleTo($user);
-    }
-
-    /**
-     * Determine whether the user can update the supervision hierarchy.
-     */
-    public function updateHierarchy(User $user): bool
-    {
-        return $user->isSuperAdmin();
+        return true;
     }
 }

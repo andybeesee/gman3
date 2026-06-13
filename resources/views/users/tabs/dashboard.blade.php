@@ -31,28 +31,4 @@
         </section>
     </div>
 
-    <aside class="team-dashboard__sidebar">
-        <section class="task-panel">
-            <div class="task-panel__header">
-                <h2 class="task-panel__title">{{ __('Direct reports') }}</h2>
-                <span class="task-panel__count">
-                    {{ $subordinates->count() }}
-                </span>
-            </div>
-
-            @if ($subordinates->isEmpty())
-                <p class="task-empty">{{ __('No direct reports.') }}</p>
-            @else
-                <ul class="team-member-list">
-                    @foreach ($subordinates as $subordinate)
-                        <li class="team-member-list__item">
-                            <a href="{{ route('users.show', $subordinate) }}" class="task-table__title-link">
-                                {{ $subordinate->name }}
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
-            @endif
-        </section>
-    </aside>
 </div>

@@ -672,12 +672,6 @@
     color: var(--color-text);
 }
 
-.hierarchy-tab {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
 .team-member-role-form {
     margin: 0;
 }
@@ -694,11 +688,4 @@
 [data-team-member-error][hidden],
 [data-team-members-empty][hidden] {
     display: none;
-}
-
-.hierarchy-supervisor {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    padding: 0.875rem 1rem;
 }

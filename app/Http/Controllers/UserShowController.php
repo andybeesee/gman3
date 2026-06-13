@@ -27,34 +27,21 @@ class UserShowController extends Controller
     {
         $this->authorize('view', $user);
 
-        $showHierarchyTab = $request->user()->can('updateHierarchy', User::class);
-        $tab = $this->resolveTab($request, $showHierarchyTab);
-
-        $user->loadCount('subordinates');
+        $tab = $this->resolveTab($request);
         $user->open_tasks_count = $user->relatedTasksQuery()->whereStatusOpen()->count();
-
-        if ($tab === 'hierarchy') {
-            $user->load('supervisor');
-        }
 
         return view('users.show', [
             'user' => $user,
             'tab' => $tab,
-            'showHierarchyTab' => $showHierarchyTab,
             ...$this->dataForTab($user, $tab),
         ]);
     }
 
-    private function resolveTab(Request $request, bool $showHierarchyTab): string
+    private function resolveTab(Request $request): string
     {
         $tab = $request->query('tab', 'dashboard');
-        $allowedTabs = self::TABS;
 
-        if ($showHierarchyTab) {
-            $allowedTabs[] = 'hierarchy';
-        }
-
-        return in_array($tab, $allowedTabs, true) ? $tab : 'dashboard';
+        return in_array($tab, self::TABS, true) ? $tab : 'dashboard';
     }
 
     /**
@@ -65,7 +52,6 @@ class UserShowController extends Controller
         return match ($tab) {
             'projects' => $this->projectsTabData($user),
             'tasks' => $this->tasksTabData($user),
-            'hierarchy' => $this->hierarchyTabData($user),
             default => $this->dashboardTabData($user),
         };
     }
@@ -76,7 +62,6 @@ class UserShowController extends Controller
     private function dashboardTabData(User $user): array
     {
         return [
-            'subordinates' => $user->subordinates()->orderBy('name')->get(),
             'activeProjects' => $user->ownedProjects()
                 ->with(['currentStatusChange.status', 'teams'])
                 ->withCount('ownedTasks')
@@ -97,7 +82,6 @@ class UserShowController extends Controller
             'statuses' => Status::query()->orderBy('sort_order')->get(),
             'projects' => new LengthAwarePaginator([], 0, 50),
             'tasks' => new LengthAwarePaginator([], 0, 50),
-            'supervisedUsers' => collect(),
         ];
     }
 
@@ -116,13 +100,11 @@ class UserShowController extends Controller
             ->appends(['tab' => 'projects']);
 
         return [
-            'subordinates' => collect(),
             'activeProjects' => collect(),
             'activeTasks' => collect(),
             'statuses' => collect(),
             'projects' => $projects,
             'tasks' => new LengthAwarePaginator([], 0, 50),
-            'supervisedUsers' => collect(),
         ];
     }
 
@@ -140,29 +122,11 @@ class UserShowController extends Controller
             ->appends(['tab' => 'tasks']);
 
         return [
-            'subordinates' => collect(),
             'activeProjects' => collect(),
             'activeTasks' => collect(),
             'statuses' => Status::query()->orderBy('sort_order')->get(),
             'projects' => new LengthAwarePaginator([], 0, 50),
             'tasks' => $tasks,
-            'supervisedUsers' => collect(),
-        ];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function hierarchyTabData(User $user): array
-    {
-        return [
-            'subordinates' => collect(),
-            'activeProjects' => collect(),
-            'activeTasks' => collect(),
-            'statuses' => collect(),
-            'projects' => new LengthAwarePaginator([], 0, 50),
-            'tasks' => new LengthAwarePaginator([], 0, 50),
-            'supervisedUsers' => $user->subordinates()->orderBy('name')->get(),
         ];
     }
 }
