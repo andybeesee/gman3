@@ -105,6 +105,16 @@
                         </li>
                         <li class="app-sidebar__menu-item">
                             <a
+                                href="{{ route('checklists.index') }}"
+                                class="app-sidebar__menu-button"
+                                data-sidebar-tooltip="{{ __('Checklists') }}"
+                            >
+                                <i class="fa-solid fa-clipboard-check" aria-hidden="true"></i>
+                                <span class="app-sidebar__menu-button-text">{{ __('Checklists') }}</span>
+                            </a>
+                        </li>
+                        <li class="app-sidebar__menu-item">
+                            <a
                                 href="{{ route('teams.index') }}"
                                 class="app-sidebar__menu-button"
                                 data-sidebar-tooltip="{{ __('Teams') }}"

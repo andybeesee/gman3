@@ -65,6 +65,14 @@ class User extends Authenticatable
     }
 
     /**
+     * @return MorphMany<Checklist, $this>
+     */
+    public function ownedChecklists(): MorphMany
+    {
+        return $this->morphMany(Checklist::class, 'owner');
+    }
+
+    /**
      * @return HasMany<Project, $this>
      */
     public function ownedProjects(): HasMany

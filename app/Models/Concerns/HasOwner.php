@@ -51,29 +51,34 @@ trait HasOwner
         $query->orWhere(function (Builder $query) use ($user): void {
             $query->where('owner_type', 'user')
                 ->where('owner_id', $user->id);
-        })->orWhereHas('assignees', fn (Builder $query) => $query->whereKey($user->id))
-            ->orWhere(function (Builder $query) use ($user): void {
-                $query->where('owner_type', 'team')
-                    ->whereIn('owner_id', Team::query()
-                        ->whereHas('members', fn (Builder $query) => $query->whereKey($user->id))
-                        ->select('id'));
-            })->orWhere(function (Builder $query) use ($user): void {
-                $query->where('owner_type', 'project')
-                    ->whereHasMorph('owner', [Project::class], function (Builder $query) use ($user): void {
-                        $query->where(function (Builder $query) use ($user): void {
-                            $query->where('visibility', Visibility::Public)
-                                ->orWhere(function (Builder $query) use ($user): void {
-                                    $query->where('visibility', Visibility::Private)
-                                        ->where(function (Builder $query) use ($user): void {
-                                            $query->where('created_by_user_id', $user->id)
-                                                ->orWhere('owner_user_id', $user->id)
-                                                ->orWhereHas('teams', function (Builder $query) use ($user): void {
-                                                    $query->whereHas('members', fn (Builder $query) => $query->whereKey($user->id));
-                                                });
-                                        });
-                                });
-                        });
+        });
+
+        if (method_exists($this, 'assignees')) {
+            $query->orWhereHas('assignees', fn (Builder $query) => $query->whereKey($user->id));
+        }
+
+        $query->orWhere(function (Builder $query) use ($user): void {
+            $query->where('owner_type', 'team')
+                ->whereIn('owner_id', Team::query()
+                    ->whereHas('members', fn (Builder $query) => $query->whereKey($user->id))
+                    ->select('id'));
+        })->orWhere(function (Builder $query) use ($user): void {
+            $query->where('owner_type', 'project')
+                ->whereHasMorph('owner', [Project::class], function (Builder $query) use ($user): void {
+                    $query->where(function (Builder $query) use ($user): void {
+                        $query->where('visibility', Visibility::Public)
+                            ->orWhere(function (Builder $query) use ($user): void {
+                                $query->where('visibility', Visibility::Private)
+                                    ->where(function (Builder $query) use ($user): void {
+                                        $query->where('created_by_user_id', $user->id)
+                                            ->orWhere('owner_user_id', $user->id)
+                                            ->orWhereHas('teams', function (Builder $query) use ($user): void {
+                                                $query->whereHas('members', fn (Builder $query) => $query->whereKey($user->id));
+                                            });
+                                    });
+                            });
                     });
-            });
+                });
+        });
     }
 }

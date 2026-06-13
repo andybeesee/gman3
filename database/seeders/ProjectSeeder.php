@@ -14,7 +14,7 @@ class ProjectSeeder extends Seeder
 {
     use SeedsVisibilityGrants;
 
-    private const TARGET_PROJECT_COUNT = 500;
+    private const TARGET_PROJECT_COUNT = 250;
 
     private const TASKS_PER_PROJECT_MIN = 5;
 

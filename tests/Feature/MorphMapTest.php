@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Checklist;
 use App\Models\Status;
 use App\Models\Task;
 use App\Models\Team;
@@ -54,4 +55,17 @@ test('task owner morph stores the owner alias', function () {
         ->toBe('team')
         ->and($userTask->fresh()->owner?->is($user))->toBeTrue()
         ->and($teamTask->fresh()->owner?->is($team))->toBeTrue();
+});
+
+test('checklist morph relations store aliases', function () {
+    $user = User::factory()->create();
+    $team = Team::factory()->create();
+
+    $checklist = Checklist::factory()->ownedBy($user)->create(['title' => 'Mapped checklist']);
+    $checklist->syncTeams([$team]);
+
+    expect(DB::table('checklists')->where('id', $checklist->id)->value('owner_type'))
+        ->toBe('user')
+        ->and(DB::table('teamables')->where('teamable_id', $checklist->id)->where('teamable_type', 'checklist')->value('teamable_type'))
+        ->toBe('checklist');
 });

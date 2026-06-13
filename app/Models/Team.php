@@ -47,11 +47,27 @@ class Team extends Model
     }
 
     /**
+     * @return MorphToMany<Checklist, $this>
+     */
+    public function checklists(): MorphToMany
+    {
+        return $this->morphedByMany(Checklist::class, 'teamable');
+    }
+
+    /**
      * @return MorphMany<Task, $this>
      */
     public function ownedTasks(): MorphMany
     {
         return $this->morphMany(Task::class, 'owner');
+    }
+
+    /**
+     * @return MorphMany<Checklist, $this>
+     */
+    public function ownedChecklists(): MorphMany
+    {
+        return $this->morphMany(Checklist::class, 'owner');
     }
 
     /**

@@ -60,6 +60,14 @@ class Project extends Model
         return $this->morphMany(Task::class, 'owner');
     }
 
+    /**
+     * @return MorphMany<Checklist, $this>
+     */
+    public function ownedChecklists(): MorphMany
+    {
+        return $this->morphMany(Checklist::class, 'owner');
+    }
+
     protected static function superAdminSeesAll(): bool
     {
         return true;

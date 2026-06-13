@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 
-#[Fillable(['title', 'description', 'start_date', 'due_date', 'visibility', 'created_by_user_id', 'completed_at', 'completed_by_user_id'])]
+#[Fillable(['title', 'description', 'start_date', 'due_date', 'visibility', 'created_by_user_id', 'completed_at', 'completed_by_user_id', 'checklist_id', 'checklist_position'])]
 class Task extends Model
 {
     /** @use HasFactory<TaskFactory> */
@@ -37,6 +37,14 @@ class Task extends Model
     protected static function booted(): void
     {
         static::addGlobalScope(new VisibleToAuthenticatedUserScope);
+
+        static::saved(function (Task $task): void {
+            $task->syncChecklistDateRollups();
+        });
+
+        static::deleted(function (Task $task): void {
+            $task->syncChecklistDateRollups();
+        });
     }
 
     /**
@@ -49,7 +57,16 @@ class Task extends Model
             'start_date' => 'datetime',
             'due_date' => 'datetime',
             'completed_at' => 'datetime',
+            'checklist_position' => 'integer',
         ];
+    }
+
+    /**
+     * @return BelongsTo<Checklist, $this>
+     */
+    public function checklist(): BelongsTo
+    {
+        return $this->belongsTo(Checklist::class);
     }
 
     public function getStatusAttribute(): ?Status
@@ -160,5 +177,24 @@ class Task extends Model
             'completed_at' => null,
             'completed_by_user_id' => null,
         ])->save();
+    }
+
+    protected function syncChecklistDateRollups(): void
+    {
+        $checklistIds = collect([$this->checklist_id]);
+
+        if ($this->wasChanged('checklist_id')) {
+            $checklistIds->push($this->getOriginal('checklist_id'));
+        }
+
+        $checklistIds
+            ->filter()
+            ->unique()
+            ->each(function (int $checklistId): void {
+                Checklist::query()
+                    ->withoutGlobalScope(VisibleToAuthenticatedUserScope::class)
+                    ->find($checklistId)
+                    ?->syncTaskDateRollup();
+            });
     }
 }

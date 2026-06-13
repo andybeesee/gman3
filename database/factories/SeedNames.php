@@ -307,6 +307,11 @@ final class SeedNames
         return self::buildTaskTitle();
     }
 
+    public static function checklistTitle(): string
+    {
+        return self::buildChecklistTitle();
+    }
+
     public static function optionalDescription(): ?string
     {
         return fake()->optional(0.35)->randomElement(self::DESCRIPTIONS);
@@ -373,6 +378,25 @@ final class SeedNames
             '%s %s',
             fake()->randomElement(self::TASK_ACTIONS),
             fake()->randomElement(self::TASK_OBJECTS),
+        );
+    }
+
+    private static function buildChecklistTitle(): string
+    {
+        return sprintf(
+            '%s checklist',
+            fake()->randomElement([
+                'Launch readiness',
+                'Release review',
+                'Client handoff',
+                'QA pass',
+                'Content migration',
+                'Security follow-up',
+                'Onboarding',
+                'Deployment',
+                'Training prep',
+                'Retrospective',
+            ]),
         );
     }
 }

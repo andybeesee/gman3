@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AddTeamMemberController;
+use App\Http\Controllers\ChecklistIndexController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProjectIndexController;
 use App\Http\Controllers\ProjectShowController;
@@ -20,6 +21,7 @@ Route::get('/', function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
+    Route::get('/checklists', ChecklistIndexController::class)->name('checklists.index');
     Route::get('/tasks', TaskIndexController::class)->name('tasks.index');
     Route::get('/projects', ProjectIndexController::class)->name('projects.index');
     Route::get('/projects/{project}', ProjectShowController::class)->name('projects.show');

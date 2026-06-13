@@ -2,6 +2,7 @@
 
 namespace Database\Seeders\Concerns;
 
+use App\Models\Checklist;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\Team;
@@ -15,7 +16,7 @@ trait SeedsVisibilityGrants
      * @param  Collection<int, Team>|null  $teams
      */
     protected function maybeSeedVisibilityGrants(
-        Team|Project|Task $resource,
+        Team|Project|Task|Checklist $resource,
         Collection $users,
         ?Collection $teams = null,
     ): void {

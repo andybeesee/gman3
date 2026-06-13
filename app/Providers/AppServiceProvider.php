@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Checklist;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\Team;
@@ -27,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Relation::enforceMorphMap([
+            'checklist' => Checklist::class,
             'project' => Project::class,
             'task' => Task::class,
             'team' => Team::class,
