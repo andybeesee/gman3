@@ -30,6 +30,7 @@ test('team members can view team owned projects on the index', function () {
         ->get(route('projects.index'))
         ->assertSuccessful()
         ->assertSee('Platform rollout')
+        ->assertSee(__('Owners'))
         ->assertSee('Platform Team')
         ->assertSee('3', false);
 });
@@ -63,6 +64,7 @@ test('owners can see their personally owned projects on the index', function () 
         ->get(route('projects.index'))
         ->assertSuccessful()
         ->assertSee('Private portfolio')
+        ->assertSee(__('Owners'))
         ->assertSee('Project Owner')
         ->assertSee('Planning');
 });

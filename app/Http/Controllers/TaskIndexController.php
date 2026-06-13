@@ -25,6 +25,7 @@ class TaskIndexController extends Controller
                 'assignees',
                 'owner',
                 'teams' => fn ($query) => $query->visibleTo($request->user()),
+                'visibilityGrants.grantee',
             ])
             ->orderByRaw('due_date IS NULL')
             ->orderBy('due_date')

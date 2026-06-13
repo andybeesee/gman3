@@ -72,7 +72,7 @@ class TeamShowController extends Controller
         return [
             'members' => $team->members()->orderBy('name')->get(),
             'activeProjects' => $team->projects()
-                ->with(['currentStatusChange.status', 'ownerUser'])
+                ->with(['currentStatusChange.status', 'ownerUser', 'teams', 'visibilityGrants.grantee'])
                 ->withCount('ownedTasks')
                 ->whereStatusOpen()
                 ->orderByRaw('due_date IS NULL')
@@ -81,7 +81,7 @@ class TeamShowController extends Controller
                 ->limit(self::DASHBOARD_LIMIT)
                 ->get(),
             'activeTasks' => $team->relatedTasksQuery()
-                ->with(['currentStatusChange.status', 'assignees', 'owner', 'teams'])
+                ->with(['currentStatusChange.status', 'assignees', 'owner', 'teams', 'visibilityGrants.grantee'])
                 ->whereStatusOpen()
                 ->orderByRaw('due_date IS NULL')
                 ->orderBy('due_date')
@@ -127,7 +127,7 @@ class TeamShowController extends Controller
     private function projectsTabData(Team $team): array
     {
         $projects = $team->projects()
-            ->with(['currentStatusChange.status', 'teams', 'ownerUser'])
+            ->with(['currentStatusChange.status', 'teams', 'ownerUser', 'visibilityGrants.grantee'])
             ->withCount('ownedTasks')
             ->orderByRaw('due_date IS NULL')
             ->orderBy('due_date')
@@ -152,7 +152,7 @@ class TeamShowController extends Controller
     private function tasksTabData(Team $team): array
     {
         $tasks = $team->relatedTasksQuery()
-            ->with(['currentStatusChange.status', 'assignees', 'owner', 'teams'])
+            ->with(['currentStatusChange.status', 'assignees', 'owner', 'teams', 'visibilityGrants.grantee'])
             ->orderByRaw('due_date IS NULL')
             ->orderBy('due_date')
             ->latest('id')

@@ -11,7 +11,7 @@
             @if ($activeProjects->isEmpty())
                 <p class="task-empty">{{ __('No active projects for this user.') }}</p>
             @else
-                @include('teams.partials.projects-table', ['projects' => $activeProjects, 'showTeams' => true])
+                @include('teams.partials.projects-table', ['projects' => $activeProjects])
             @endif
         </section>
 

@@ -23,6 +23,7 @@ class ProjectIndexController extends Controller
                 'currentStatusChange.status',
                 'teams' => fn ($query) => $query->visibleTo($request->user()),
                 'ownerUser',
+                'visibilityGrants.grantee',
             ])
             ->withCount('ownedTasks')
             ->orderByRaw('due_date IS NULL')

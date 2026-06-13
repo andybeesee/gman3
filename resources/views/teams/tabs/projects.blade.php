@@ -9,7 +9,7 @@
     @if ($projects->isEmpty())
         <p class="task-empty">{{ __('No projects are available for this team yet.') }}</p>
     @else
-        @include('teams.partials.projects-table', ['projects' => $projects, 'showTeams' => true])
+        @include('teams.partials.projects-table', ['projects' => $projects])
     @endif
 </section>
 

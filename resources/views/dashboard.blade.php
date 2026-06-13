@@ -42,8 +42,13 @@
                                 $status = $task->status;
                             @endphp
                             <tr>
-                                <td class="task-table__title" title="{{ $task->title }}">
-                                    {{ $task->title }}
+                                <td class="task-table__title">
+                                    <span class="task-table__title-content">
+                                        <span class="task-table__title-text" title="{{ $task->title }}">
+                                            {{ $task->title }}
+                                        </span>
+                                        <x-visibility-indicator :resource="$task" />
+                                    </span>
                                 </td>
                                 <td class="task-table__project">
                                     @if ($task->isProjectOwned() && $task->owner)

@@ -19,10 +19,10 @@ class ProjectShowController extends Controller
     {
         $this->authorize('view', $project);
 
-        $project->load(['currentStatusChange.status', 'teams', 'ownerUser']);
+        $project->load(['currentStatusChange.status', 'teams', 'ownerUser', 'visibilityGrants.grantee']);
 
         $tasks = $project->ownedTasks()
-            ->with(['currentStatusChange.status', 'assignees', 'teams'])
+            ->with(['currentStatusChange.status', 'assignees', 'teams', 'visibilityGrants.grantee'])
             ->orderByRaw('due_date IS NULL')
             ->orderBy('due_date')
             ->latest('id')

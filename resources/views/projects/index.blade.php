@@ -27,8 +27,7 @@
                         <tr>
                             <th scope="col">{{ __('Title') }}</th>
                             <th scope="col">{{ __('Status') }}</th>
-                            <th scope="col">{{ __('Ownership') }}</th>
-                            <th scope="col">{{ __('Teams') }}</th>
+                            <th scope="col">{{ __('Owners') }}</th>
                             <th scope="col">{{ __('Tasks') }}</th>
                             <th scope="col">{{ __('Start') }}</th>
                             <th scope="col">{{ __('Due') }}</th>
@@ -40,10 +39,13 @@
                                 $status = $project->status;
                             @endphp
                             <tr>
-                                <td class="task-table__title" title="{{ $project->title }}">
-                                    <a href="{{ route('projects.show', $project) }}" class="task-table__title-link">
-                                        {{ $project->title }}
-                                    </a>
+                                <td class="task-table__title">
+                                    <span class="task-table__title-content">
+                                        <a href="{{ route('projects.show', $project) }}" class="task-table__title-link task-table__title-text" title="{{ $project->title }}">
+                                            {{ $project->title }}
+                                        </a>
+                                        <x-visibility-indicator :resource="$project" />
+                                    </span>
                                 </td>
                                 <td>
                                     @if ($status)
@@ -58,22 +60,8 @@
                                         <span class="task-table__muted">—</span>
                                     @endif
                                 </td>
-                                <td>
-                                    @if ($project->isUserOwned())
-                                        <span>{{ $project->ownerUser?->name ?? __('Personal') }}</span>
-                                    @else
-                                        <span>{{ __('Team') }}</span>
-                                    @endif
-                                    @if ($project->isPrivate())
-                                        <span class="task-table__muted"> · {{ __('Private') }}</span>
-                                    @endif
-                                </td>
-                                <td class="task-table__teams">
-                                    @if ($project->teams->isEmpty())
-                                        <span class="task-table__muted">—</span>
-                                    @else
-                                        {{ $project->teams->pluck('name')->join(', ') }}
-                                    @endif
+                                <td class="task-table__owners">
+                                    <x-project-owners :project="$project" />
                                 </td>
                                 <td class="task-table__numeric">
                                     {{ number_format($project->owned_tasks_count) }}
