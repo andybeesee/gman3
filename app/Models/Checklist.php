@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Visibility;
 use App\Models\Concerns\HasOwner;
+use App\Models\Concerns\HasRecord;
 use App\Models\Concerns\HasSchedulableDates;
 use App\Models\Concerns\HasTeams;
 use App\Models\Concerns\HasVisibility;
@@ -18,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Checklist extends Model
 {
     /** @use HasFactory<ChecklistFactory> */
-    use HasFactory, HasOwner, HasSchedulableDates, HasTeams, HasVisibility {
+    use HasFactory, HasOwner, HasRecord, HasSchedulableDates, HasTeams, HasVisibility {
         HasOwner::applyOwnershipVisibilityAccess insteadof HasVisibility;
     }
 

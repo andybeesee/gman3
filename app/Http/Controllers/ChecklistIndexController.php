@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Checklist;
+use App\Queries\RecordableQuery;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ class ChecklistIndexController extends Controller
     {
         $this->authorize('viewAny', Checklist::class);
 
-        $checklists = Checklist::query()
+        $checklists = RecordableQuery::checklistsVisibleTo($request->user())
             ->with([
                 'owner',
                 'teams' => fn ($query) => $query->visibleTo($request->user()),

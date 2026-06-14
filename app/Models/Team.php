@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\TeamRole;
 use App\Enums\Visibility;
+use App\Models\Concerns\HasRecord;
 use App\Models\Concerns\HasTeamVisibility;
 use App\Models\Concerns\HasVisibility;
 use App\Models\Pivots\Teamable;
@@ -19,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 class Team extends Model
 {
     /** @use HasFactory<TeamFactory> */
-    use HasFactory, HasTeamVisibility, HasVisibility {
+    use HasFactory, HasRecord, HasTeamVisibility, HasVisibility {
         HasTeamVisibility::applyModelVisibilityAccess insteadof HasVisibility;
     }
 

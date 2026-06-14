@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
+use App\Queries\RecordableQuery;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ class ProjectIndexController extends Controller
     {
         $this->authorize('viewAny', Project::class);
 
-        $projects = Project::query()
+        $projects = RecordableQuery::projectsVisibleTo($request->user())
             ->with([
                 'currentStatusChange.status',
                 'teams' => fn ($query) => $query->visibleTo($request->user()),

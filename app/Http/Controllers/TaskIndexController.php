@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Status;
 use App\Models\Task;
+use App\Queries\RecordableQuery;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -19,7 +20,7 @@ class TaskIndexController extends Controller
     {
         $this->authorize('viewAny', Task::class);
 
-        $tasks = Task::query()
+        $tasks = RecordableQuery::tasksVisibleTo($request->user())
             ->with([
                 'currentStatusChange.status',
                 'assignees',

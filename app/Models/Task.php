@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\Visibility;
 use App\Models\Concerns\HasAssignees;
 use App\Models\Concerns\HasOwner;
+use App\Models\Concerns\HasRecord;
 use App\Models\Concerns\HasSchedulableDates;
 use App\Models\Concerns\HasStatuses;
 use App\Models\Concerns\HasTeams;
@@ -22,7 +23,7 @@ use Illuminate\Support\Facades\Auth;
 class Task extends Model
 {
     /** @use HasFactory<TaskFactory> */
-    use HasAssignees, HasFactory, HasOwner, HasSchedulableDates, HasStatuses, HasTeams, HasVisibility {
+    use HasAssignees, HasFactory, HasOwner, HasRecord, HasSchedulableDates, HasStatuses, HasTeams, HasVisibility {
         HasOwner::applyOwnershipVisibilityAccess insteadof HasVisibility;
         setStatus as protected setStatusFromTrait;
     }

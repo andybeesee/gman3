@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Visibility;
 use App\Models\Concerns\HasProjectOwnership;
+use App\Models\Concerns\HasRecord;
 use App\Models\Concerns\HasSchedulableDates;
 use App\Models\Concerns\HasStatuses;
 use App\Models\Concerns\HasTeams;
@@ -19,8 +20,10 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 class Project extends Model
 {
     /** @use HasFactory<ProjectFactory> */
-    use HasFactory, HasProjectOwnership, HasSchedulableDates, HasStatuses, HasTeams, HasVisibility {
+    use HasFactory, HasProjectOwnership, HasRecord, HasSchedulableDates, HasStatuses, HasTeams, HasVisibility {
         HasProjectOwnership::applyOwnershipVisibilityAccess insteadof HasVisibility;
+        HasProjectOwnership::recordOwnerId insteadof HasRecord;
+        HasProjectOwnership::recordOwnerType insteadof HasRecord;
     }
 
     /**

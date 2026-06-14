@@ -3,7 +3,6 @@
 namespace App\Models\Concerns;
 
 use App\Enums\Visibility;
-use App\Models\Scopes\VisibleToAuthenticatedUserScope;
 use App\Models\Team;
 use App\Models\User;
 use App\Models\VisibilityGrant;
@@ -41,12 +40,14 @@ trait HasVisibility
 
     public function isPublic(): bool
     {
-        return $this->visibility === Visibility::Public;
+        return $this->record?->visibility === Visibility::Public
+            || ($this->record === null && $this->visibility === Visibility::Public);
     }
 
     public function isPrivate(): bool
     {
-        return $this->visibility === Visibility::Private;
+        return $this->record?->visibility === Visibility::Private
+            || ($this->record === null && $this->visibility === Visibility::Private);
     }
 
     public function isVisibleTo(User $user): bool
@@ -59,19 +60,22 @@ trait HasVisibility
             return true;
         }
 
-        return static::query()
-            ->withoutGlobalScope(VisibleToAuthenticatedUserScope::class)
-            ->whereKey($this->getKey())
-            ->wherePrivate()
-            ->whereAccessibleTo($user)
+        $record = $this->ensureRecord();
+
+        return $record->newQuery()
+            ->whereKey($record->getKey())
+            ->visibleTo($user)
             ->exists();
     }
 
     public function grantAccessTo(User|Team $grantee): VisibilityGrant
     {
-        return $this->visibilityGrants()->firstOrCreate([
+        return $this->ensureRecord()->visibilityGrants()->firstOrCreate([
             'grantee_type' => $grantee->getMorphClass(),
             'grantee_id' => $grantee->getKey(),
+        ], [
+            'grantable_type' => $this->getMorphClass(),
+            'grantable_id' => $this->getKey(),
         ]);
     }
 
@@ -81,17 +85,7 @@ trait HasVisibility
      */
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
-        if ($user->isSuperAdmin() && static::superAdminSeesAll()) {
-            return $query;
-        }
-
-        return $query->where(function (Builder $query) use ($user): void {
-            $query->where('visibility', Visibility::Public)
-                ->orWhere(function (Builder $query) use ($user): void {
-                    $query->wherePrivate()
-                        ->whereAccessibleTo($user);
-                });
-        });
+        return $query->whereHas('record', fn (Builder $query) => $query->visibleTo($user));
     }
 
     /**
@@ -100,7 +94,7 @@ trait HasVisibility
      */
     public function scopeWherePrivate(Builder $query): Builder
     {
-        return $query->where('visibility', Visibility::Private);
+        return $query->whereHas('record', fn (Builder $query) => $query->where('visibility', Visibility::Private));
     }
 
     /**
@@ -109,12 +103,7 @@ trait HasVisibility
      */
     public function scopeWhereAccessibleTo(Builder $query, User $user): Builder
     {
-        return $query->where(function (Builder $query) use ($user): void {
-            $query->where('created_by_user_id', $user->id);
-
-            $this->extendVisibilityAccessQuery($query, $user);
-            $this->extendVisibilityGrantQuery($query, $user);
-        });
+        return $query->whereHas('record', fn (Builder $query) => $query->whereAccessibleTo($user));
     }
 
     protected function extendVisibilityAccessQuery(Builder $query, User $user): void

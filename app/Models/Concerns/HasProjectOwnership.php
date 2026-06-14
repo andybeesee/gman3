@@ -54,4 +54,14 @@ trait HasProjectOwnership
         $query->orWhere('owner_user_id', $user->id)
             ->orWhereHas('teams.members', fn (Builder $query) => $query->whereKey($user->id));
     }
+
+    protected function recordOwnerType(): ?string
+    {
+        return $this->owner_user_id === null ? null : 'user';
+    }
+
+    protected function recordOwnerId(): ?int
+    {
+        return $this->owner_user_id;
+    }
 }
