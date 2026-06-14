@@ -1,4 +1,5 @@
 import { initChecklistSortables } from './checklist-sortable';
+import { initMultiSelects } from './multi-select';
 import { initTeamMembers } from './team-members';
 
 const THEME_STORAGE_KEY = 'theme';
@@ -239,6 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initTaskActionMenus();
     initPagination();
+    initMultiSelects();
     initChecklistSortables();
     initTeamMembers();
 

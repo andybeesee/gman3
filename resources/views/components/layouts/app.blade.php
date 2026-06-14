@@ -85,6 +85,16 @@
                     <ul class="app-sidebar__menu">
                         <li class="app-sidebar__menu-item">
                             <a
+                                href="{{ route('tasks.create') }}"
+                                class="app-sidebar__menu-button app-sidebar__menu-button--primary"
+                                data-sidebar-tooltip="{{ __('New task') }}"
+                            >
+                                <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                                <span class="app-sidebar__menu-button-text">{{ __('New task') }}</span>
+                            </a>
+                        </li>
+                        <li class="app-sidebar__menu-item">
+                            <a
                                 href="{{ route('projects.index') }}"
                                 class="app-sidebar__menu-button"
                                 data-sidebar-tooltip="{{ __('Projects') }}"

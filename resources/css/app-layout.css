@@ -182,6 +182,17 @@ body.app-page {
     background-color: var(--sidebar-accent);
 }
 
+.app-sidebar__menu-button--primary {
+    color: var(--sidebar-primary-foreground);
+    background-color: var(--sidebar-primary);
+}
+
+.app-sidebar__menu-button--primary:hover,
+.app-sidebar__menu-button--primary:focus-visible {
+    color: var(--sidebar-primary-foreground);
+    background-color: color-mix(in srgb, var(--sidebar-primary) 88%, transparent);
+}
+
 .app-sidebar__menu-button--lg {
     height: 3rem;
     padding: 0.5rem;

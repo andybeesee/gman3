@@ -24,6 +24,14 @@ class TaskPolicy
     }
 
     /**
+     * Determine whether the user can create tasks.
+     */
+    public function create(User $user): bool
+    {
+        return true;
+    }
+
+    /**
      * Determine whether the user can update the task status.
      */
     public function updateStatus(User $user, Task $task): bool

@@ -108,6 +108,13 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 
 - Laravel can be deployed using [Laravel Cloud](https://cloud.laravel.com/), which is the fastest way to deploy and scale production Laravel applications.
 
+=== tests rules ===
+
+# Test Enforcement
+
+- Every change must be programmatically tested. Write a new test or update an existing test, then run the affected tests to make sure they pass.
+- Run the minimum number of tests needed to ensure code quality and speed. Use `php artisan test --compact` with a specific filename or filter.
+
 === laravel/core rules ===
 
 # Do Things the Laravel Way
@@ -119,7 +126,6 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 ### Model Creation
 
 - When creating new models, create useful factories and seeders for them too. Ask the user if they need any other things, using `php artisan make:model --help` to check the available options.
-- Any model used in a polymorphic relation (`morphTo`, `morphMany`, `morphToMany`, etc.) must be registered in `Relation::enforceMorphMap()` in `AppServiceProvider`. Use a short alias (e.g. `'task' => Task::class`), not the fully qualified class name in the database.
 
 ## APIs & Eloquent Resources
 

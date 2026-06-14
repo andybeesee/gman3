@@ -4,6 +4,12 @@
         <p class="dashboard-subtitle">
             {{ __('All tasks across the organization.') }}
         </p>
+        <div class="dashboard-header__actions">
+            <a href="{{ route('tasks.create') }}" class="dashboard-header__link">
+                <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                <span>{{ __('New task') }}</span>
+            </a>
+        </div>
 
         @if (session('status'))
             <p class="dashboard-flash" role="status">{{ session('status') }}</p>
