@@ -27,9 +27,8 @@
                     <thead>
                         <tr>
                             <th scope="col">{{ __('Order') }}</th>
-                            <th scope="col">{{ __('Name') }}</th>
+                            <th scope="col">{{ __('Status') }}</th>
                             <th scope="col">{{ __('Slug') }}</th>
-                            <th scope="col">{{ __('Icon') }}</th>
                             <th scope="col">{{ __('Color') }}</th>
                             <th scope="col">{{ __('Closed') }}</th>
                         </tr>
@@ -40,18 +39,24 @@
                                 <td class="task-table__numeric">{{ $status->sort_order }}</td>
                                 <td class="task-table__title" title="{{ $status->name }}">
                                     <a href="{{ route('statuses.show', $status) }}" class="task-table__title-link">
-                                        <i class="fa-solid {{ $status->fontAwesomeIcon() }}" aria-hidden="true"></i>
-                                        {{ $status->name }}
+                                        <span class="task-status status-color-{{ $status->color }}">
+                                            <i class="fa-solid {{ $status->fontAwesomeIcon() }}" aria-hidden="true"></i>
+                                            <span>{{ $status->name }}</span>
+                                        </span>
                                     </a>
                                 </td>
                                 <td>{{ $status->slug }}</td>
-                                <td>{{ $status->icon }}</td>
-                                <td>{{ $status->color }}</td>
+                                <td>
+                                    <span class="task-status status-color-{{ $status->color }}">
+                                        <i class="fa-solid fa-circle" aria-hidden="true"></i>
+                                        <span>{{ ucfirst($status->color) }}</span>
+                                    </span>
+                                </td>
                                 <td>
                                     @if ($status->is_closed)
-                                        <i class="fa-solid fa-check" aria-label="{{ __('Yes') }}"></i>
+                                        <i class="fa-solid fa-circle-check" aria-label="{{ __('Yes') }}"></i>
                                     @else
-                                        <span aria-label="{{ __('No') }}">—</span>
+                                        <span class="task-table__muted" aria-label="{{ __('No') }}">—</span>
                                     @endif
                                 </td>
                             </tr>
