@@ -11,9 +11,18 @@ use Illuminate\Support\Str;
  */
 class StatusFactory extends Factory
 {
+    public const COLORS = [
+        'slate', 'gray', 'zinc', 'stone',
+        'red', 'orange', 'amber', 'yellow',
+        'lime', 'green', 'emerald', 'teal',
+        'cyan', 'sky', 'blue', 'indigo',
+        'violet', 'purple', 'fuchsia', 'pink',
+        'rose', 'coral', 'maroon', 'navy',
+        'forest', 'sage', 'mint', 'lavender',
+        'gold', 'brown',
+    ];
+
     /**
-     * Define the model's default state.
-     *
      * @return array<string, mixed>
      */
     public function definition(): array
@@ -24,8 +33,7 @@ class StatusFactory extends Factory
             'name' => Str::title($name),
             'slug' => Str::slug($name),
             'icon' => 'clock',
-            'light_theme_color' => fake()->hexColor(),
-            'dark_theme_color' => fake()->hexColor(),
+            'color' => fake()->randomElement(self::COLORS),
             'sort_order' => fake()->numberBetween(1, 10),
             'is_closed' => false,
         ];

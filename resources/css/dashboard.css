@@ -806,29 +806,54 @@ body.is-checklist-sorting {
     cursor: wait;
 }
 
+/* Status color utilities — set --status-color from theme-aware CSS variables */
+.status-color-slate    { --status-color: var(--status-color-slate); }
+.status-color-gray     { --status-color: var(--status-color-gray); }
+.status-color-zinc     { --status-color: var(--status-color-zinc); }
+.status-color-stone    { --status-color: var(--status-color-stone); }
+.status-color-red      { --status-color: var(--status-color-red); }
+.status-color-orange   { --status-color: var(--status-color-orange); }
+.status-color-amber    { --status-color: var(--status-color-amber); }
+.status-color-yellow   { --status-color: var(--status-color-yellow); }
+.status-color-lime     { --status-color: var(--status-color-lime); }
+.status-color-green    { --status-color: var(--status-color-green); }
+.status-color-emerald  { --status-color: var(--status-color-emerald); }
+.status-color-teal     { --status-color: var(--status-color-teal); }
+.status-color-cyan     { --status-color: var(--status-color-cyan); }
+.status-color-sky      { --status-color: var(--status-color-sky); }
+.status-color-blue     { --status-color: var(--status-color-blue); }
+.status-color-indigo   { --status-color: var(--status-color-indigo); }
+.status-color-violet   { --status-color: var(--status-color-violet); }
+.status-color-purple   { --status-color: var(--status-color-purple); }
+.status-color-fuchsia  { --status-color: var(--status-color-fuchsia); }
+.status-color-pink     { --status-color: var(--status-color-pink); }
+.status-color-rose     { --status-color: var(--status-color-rose); }
+.status-color-coral    { --status-color: var(--status-color-coral); }
+.status-color-maroon   { --status-color: var(--status-color-maroon); }
+.status-color-navy     { --status-color: var(--status-color-navy); }
+.status-color-forest   { --status-color: var(--status-color-forest); }
+.status-color-sage     { --status-color: var(--status-color-sage); }
+.status-color-mint     { --status-color: var(--status-color-mint); }
+.status-color-lavender { --status-color: var(--status-color-lavender); }
+.status-color-gold     { --status-color: var(--status-color-gold); }
+.status-color-brown    { --status-color: var(--status-color-brown); }
+
 .task-status {
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
     padding: 0.125rem 0.5rem;
-    color: var(--status-light);
+    color: var(--status-color);
     font-size: 0.75rem;
     font-weight: var(--font-weight-medium);
     white-space: nowrap;
-    background-color: color-mix(in srgb, var(--status-light) 14%, transparent);
+    background-color: color-mix(in srgb, var(--status-color) 14%, transparent);
     border-radius: 9999px;
 }
 
-@media (prefers-color-scheme: dark) {
-    :root:not(.light) .task-status {
-        color: var(--status-dark);
-        background-color: color-mix(in srgb, var(--status-dark) 18%, transparent);
-    }
-}
-
-:root.dark .task-status {
-    color: var(--status-dark);
-    background-color: color-mix(in srgb, var(--status-dark) 18%, transparent);
+:root.neon .task-status {
+    background-color: color-mix(in srgb, var(--status-color) 18%, transparent);
+    box-shadow: 0 0 6px color-mix(in srgb, var(--status-color) 40%, transparent);
 }
 
 .task-status i {
@@ -1285,12 +1310,12 @@ body.is-checklist-sorting {
     gap: 0.375rem;
     height: 2rem;
     padding: 0 0.75rem;
-    color: color-mix(in srgb, var(--status-light) 70%, var(--color-text));
+    color: color-mix(in srgb, var(--status-color) 70%, var(--color-text));
     font-family: inherit;
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
-    background-color: color-mix(in srgb, var(--status-light) 12%, var(--color-surface));
-    border: 1px solid color-mix(in srgb, var(--status-light) 30%, var(--color-border));
+    background-color: color-mix(in srgb, var(--status-color) 12%, var(--color-surface));
+    border: 1px solid color-mix(in srgb, var(--status-color) 30%, var(--color-border));
     border-radius: var(--radius-sm);
     cursor: pointer;
     transition: opacity 0.12s ease;
@@ -1305,10 +1330,8 @@ body.is-checklist-sorting {
     opacity: 0.5;
 }
 
-@media (prefers-color-scheme: dark) {
-    .task-detail__status-btn {
-        color: color-mix(in srgb, var(--status-dark) 80%, var(--color-text));
-        background-color: color-mix(in srgb, var(--status-dark) 15%, var(--color-surface));
-        border-color: color-mix(in srgb, var(--status-dark) 35%, var(--color-border));
-    }
+:root.neon .task-detail__status-btn {
+    color: var(--status-color);
+    background-color: color-mix(in srgb, var(--status-color) 15%, var(--color-surface));
+    border-color: color-mix(in srgb, var(--status-color) 40%, var(--color-border));
 }

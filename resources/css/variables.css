@@ -49,10 +49,74 @@
 
     --sidebar-width: 16rem;
     --sidebar-width-collapsed: 3rem;
+
+    /* Status palette — light theme */
+    --status-color-slate: #475569;
+    --status-color-gray: #6b7280;
+    --status-color-zinc: #71717a;
+    --status-color-stone: #78716c;
+    --status-color-red: #dc2626;
+    --status-color-orange: #ea580c;
+    --status-color-amber: #d97706;
+    --status-color-yellow: #ca8a04;
+    --status-color-lime: #65a30d;
+    --status-color-green: #16a34a;
+    --status-color-emerald: #059669;
+    --status-color-teal: #0d9488;
+    --status-color-cyan: #0891b2;
+    --status-color-sky: #0284c7;
+    --status-color-blue: #2563eb;
+    --status-color-indigo: #4f46e5;
+    --status-color-violet: #7c3aed;
+    --status-color-purple: #9333ea;
+    --status-color-fuchsia: #a21caf;
+    --status-color-pink: #db2777;
+    --status-color-rose: #e11d48;
+    --status-color-coral: #f43f5e;
+    --status-color-maroon: #9f1239;
+    --status-color-navy: #1d4ed8;
+    --status-color-forest: #15803d;
+    --status-color-sage: #4d7c0f;
+    --status-color-mint: #047857;
+    --status-color-lavender: #8b5cf6;
+    --status-color-gold: #b45309;
+    --status-color-brown: #92400e;
 }
 
 @media (prefers-color-scheme: dark) {
     :root:not(.light) {
+        /* Status palette — dark theme */
+        --status-color-slate: #94a3b8;
+        --status-color-gray: #9ca3af;
+        --status-color-zinc: #a1a1aa;
+        --status-color-stone: #a8a29e;
+        --status-color-red: #f87171;
+        --status-color-orange: #fb923c;
+        --status-color-amber: #fbbf24;
+        --status-color-yellow: #facc15;
+        --status-color-lime: #a3e635;
+        --status-color-green: #4ade80;
+        --status-color-emerald: #34d399;
+        --status-color-teal: #2dd4bf;
+        --status-color-cyan: #22d3ee;
+        --status-color-sky: #38bdf8;
+        --status-color-blue: #60a5fa;
+        --status-color-indigo: #818cf8;
+        --status-color-violet: #a78bfa;
+        --status-color-purple: #c084fc;
+        --status-color-fuchsia: #e879f9;
+        --status-color-pink: #f472b6;
+        --status-color-rose: #fb7185;
+        --status-color-coral: #fc8585;
+        --status-color-maroon: #e11d48;
+        --status-color-navy: #3b82f6;
+        --status-color-forest: #22c55e;
+        --status-color-sage: #84cc16;
+        --status-color-mint: #10b981;
+        --status-color-lavender: #c4b5fd;
+        --status-color-gold: #f59e0b;
+        --status-color-brown: #d97706;
+
         --color-bg: #09090b;
         --color-surface: #09090b;
         --color-surface-muted: #18181b;
@@ -85,6 +149,38 @@
 }
 
 :root.neon {
+    /* Status palette — neon theme */
+    --status-color-slate: #8ab4d4;
+    --status-color-gray: #b0b8cc;
+    --status-color-zinc: #c0c0d4;
+    --status-color-stone: #c4bab4;
+    --status-color-red: #ff2d78;
+    --status-color-orange: #ff6b00;
+    --status-color-amber: #ffcc00;
+    --status-color-yellow: #ffe000;
+    --status-color-lime: #aaff00;
+    --status-color-green: #39ff14;
+    --status-color-emerald: #00ff99;
+    --status-color-teal: #00ffe7;
+    --status-color-cyan: #00ffff;
+    --status-color-sky: #00d4ff;
+    --status-color-blue: #0090ff;
+    --status-color-indigo: #6655ff;
+    --status-color-violet: #9d00ff;
+    --status-color-purple: #cc00ff;
+    --status-color-fuchsia: #ff00ff;
+    --status-color-pink: #ff00aa;
+    --status-color-rose: #ff1f7a;
+    --status-color-coral: #ff5577;
+    --status-color-maroon: #cc0055;
+    --status-color-navy: #003cff;
+    --status-color-forest: #00cc44;
+    --status-color-sage: #99dd00;
+    --status-color-mint: #00ff80;
+    --status-color-lavender: #bb88ff;
+    --status-color-gold: #ffd700;
+    --status-color-brown: #cc7722;
+
     --color-bg: #08001a;
     --color-surface: #0d0020;
     --color-surface-muted: #160030;
@@ -117,6 +213,38 @@
 }
 
 :root.dark {
+    /* Status palette — dark theme */
+    --status-color-slate: #94a3b8;
+    --status-color-gray: #9ca3af;
+    --status-color-zinc: #a1a1aa;
+    --status-color-stone: #a8a29e;
+    --status-color-red: #f87171;
+    --status-color-orange: #fb923c;
+    --status-color-amber: #fbbf24;
+    --status-color-yellow: #facc15;
+    --status-color-lime: #a3e635;
+    --status-color-green: #4ade80;
+    --status-color-emerald: #34d399;
+    --status-color-teal: #2dd4bf;
+    --status-color-cyan: #22d3ee;
+    --status-color-sky: #38bdf8;
+    --status-color-blue: #60a5fa;
+    --status-color-indigo: #818cf8;
+    --status-color-violet: #a78bfa;
+    --status-color-purple: #c084fc;
+    --status-color-fuchsia: #e879f9;
+    --status-color-pink: #f472b6;
+    --status-color-rose: #fb7185;
+    --status-color-coral: #fc8585;
+    --status-color-maroon: #e11d48;
+    --status-color-navy: #3b82f6;
+    --status-color-forest: #22c55e;
+    --status-color-sage: #84cc16;
+    --status-color-mint: #10b981;
+    --status-color-lavender: #c4b5fd;
+    --status-color-gold: #f59e0b;
+    --status-color-brown: #d97706;
+
     --color-bg: #09090b;
     --color-surface: #09090b;
     --color-surface-muted: #18181b;

@@ -40,8 +40,7 @@
                             <span class="project-card__meta">
                                 @if ($projectStatus)
                                     <span
-                                        class="task-status"
-                                        style="--status-light: {{ $projectStatus->light_theme_color }}; --status-dark: {{ $projectStatus->dark_theme_color }};"
+                                        class="task-status status-color-{{ $projectStatus->color }}"
                                     >
                                         <i class="fa-solid {{ $projectStatus->fontAwesomeIcon() }}" aria-hidden="true"></i>
                                         <span>{{ $projectStatus->name }}</span>
@@ -93,8 +92,7 @@
                                                     <td>
                                                         @if ($taskStatus)
                                                             <span
-                                                                class="task-status"
-                                                                style="--status-light: {{ $taskStatus->light_theme_color }}; --status-dark: {{ $taskStatus->dark_theme_color }};"
+                                                                class="task-status status-color-{{ $taskStatus->color }}"
                                                             >
                                                                 <i class="fa-solid {{ $taskStatus->fontAwesomeIcon() }}" aria-hidden="true"></i>
                                                                 <span>{{ $taskStatus->name }}</span>
@@ -204,8 +202,7 @@
                                 <td>
                                     @if ($taskStatus)
                                         <span
-                                            class="task-status"
-                                            style="--status-light: {{ $taskStatus->light_theme_color }}; --status-dark: {{ $taskStatus->dark_theme_color }};"
+                                            class="task-status status-color-{{ $taskStatus->color }}"
                                         >
                                             <i class="fa-solid {{ $taskStatus->fontAwesomeIcon() }}" aria-hidden="true"></i>
                                             <span>{{ $taskStatus->name }}</span>

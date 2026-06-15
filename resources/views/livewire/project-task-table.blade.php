@@ -41,8 +41,7 @@
                             <td>
                                 @if ($taskStatus)
                                     <span
-                                        class="task-status"
-                                        style="--status-light: {{ $taskStatus->light_theme_color }}; --status-dark: {{ $taskStatus->dark_theme_color }};"
+                                        class="task-status status-color-{{ $taskStatus->color }}"
                                     >
                                         <i class="fa-solid {{ $taskStatus->fontAwesomeIcon() }}" aria-hidden="true"></i>
                                         <span>{{ $taskStatus->name }}</span>
