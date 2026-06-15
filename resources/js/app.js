@@ -6,12 +6,14 @@ const SIDEBAR_STORAGE_KEY = 'sidebar-collapsed';
 
 const applyTheme = (theme) => {
     const html = document.documentElement;
-    html.classList.remove('light', 'dark');
+    html.classList.remove('light', 'dark', 'neon');
 
     if (theme === 'light') {
         html.classList.add('light');
     } else if (theme === 'dark') {
         html.classList.add('dark');
+    } else if (theme === 'neon') {
+        html.classList.add('neon');
     }
 };
 
@@ -177,6 +179,23 @@ const closeTaskActionMenus = (exceptMenu = null) => {
     });
 };
 
+const initProjectCards = () => {
+    document.querySelectorAll('[data-project-toggle]').forEach((toggle) => {
+        toggle.addEventListener('click', () => {
+            const card = toggle.closest('[data-project-card]');
+            const bodyId = toggle.getAttribute('aria-controls');
+            const body = bodyId ? document.getElementById(bodyId) : null;
+            const isOpen = card.classList.toggle('is-open');
+
+            toggle.setAttribute('aria-expanded', String(isOpen));
+
+            if (body) {
+                body.hidden = ! isOpen;
+            }
+        });
+    });
+};
+
 const initPagination = () => {
     document.querySelectorAll('[data-pagination-page-select]').forEach((select) => {
         select.addEventListener('change', () => {
@@ -188,30 +207,35 @@ const initPagination = () => {
 };
 
 const initTaskActionMenus = () => {
-    document.querySelectorAll('[data-task-actions]').forEach((wrapper) => {
-        const toggle = wrapper.querySelector('[data-task-actions-toggle]');
-        const menu = wrapper.querySelector('[data-task-actions-menu]');
+    // Delegated toggle handler — works for rows added dynamically by Livewire
+    document.addEventListener('click', (event) => {
+        const toggle = event.target.closest('[data-task-actions-toggle]');
 
-        if (! toggle || ! menu) {
+        if (! toggle) {
             return;
         }
 
-        toggle.addEventListener('click', (event) => {
-            event.stopPropagation();
+        event.stopPropagation();
 
-            const willOpen = ! menu.classList.contains('is-open');
+        const wrapper = toggle.closest('[data-task-actions]');
+        const menu = wrapper?.querySelector('[data-task-actions-menu]');
 
-            closeTaskActionMenus(willOpen ? menu : null);
+        if (! menu) {
+            return;
+        }
 
-            if (willOpen) {
-                positionTaskActionMenu(toggle, menu);
-                toggle.setAttribute('aria-expanded', 'true');
-            } else {
-                menu.classList.remove('is-open');
-                resetTaskActionMenuPosition(menu);
-                toggle.setAttribute('aria-expanded', 'false');
-            }
-        });
+        const willOpen = ! menu.classList.contains('is-open');
+
+        closeTaskActionMenus(willOpen ? menu : null);
+
+        if (willOpen) {
+            positionTaskActionMenu(toggle, menu);
+            toggle.setAttribute('aria-expanded', 'true');
+        } else {
+            menu.classList.remove('is-open');
+            resetTaskActionMenuPosition(menu);
+            toggle.setAttribute('aria-expanded', 'false');
+        }
     });
 
     const closeOnViewportChange = () => closeTaskActionMenus();
@@ -239,6 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initTaskActionMenus();
     initPagination();
+    initProjectCards();
     initChecklistSortables();
     initTeamMembers();
 
