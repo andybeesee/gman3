@@ -13,7 +13,7 @@
     </button>
 
     <div class="task-actions__menu" data-task-actions-menu role="menu">
-        <a href="#" class="task-actions__item" role="menuitem">
+        <a href="{{ route('tasks.show', $task) }}" class="task-actions__item" role="menuitem">
             <i class="fa-solid fa-eye" aria-hidden="true"></i>
             <span>{{ __('View') }}</span>
         </a>

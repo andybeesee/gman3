@@ -38,7 +38,7 @@ test('authenticated users can create a personal task', function () {
     $user = User::factory()->create();
     Status::factory()->create(['slug' => 'pending', 'is_closed' => false]);
 
-    $this->actingAs($user)
+    $response = $this->actingAs($user)
         ->post(route('tasks.store'), [
             'title' => 'Draft onboarding checklist',
             'description' => 'Write the first pass.',
@@ -47,11 +47,13 @@ test('authenticated users can create a personal task', function () {
             'visibility' => 'private',
             'owner_type' => 'user',
             'assignee_ids' => [$user->id],
-        ])
-        ->assertRedirect(route('tasks.index'))
-        ->assertSessionHas('status', __('Task created.'));
+        ]);
 
     $task = Task::query()->where('title', 'Draft onboarding checklist')->firstOrFail();
+
+    $response
+        ->assertRedirect(route('tasks.show', $task))
+        ->assertSessionHas('status', __('Task created.'));
 
     expect($task->created_by_user_id)->toBe($user->id)
         ->and($task->owner_type)->toBe('user')
@@ -67,17 +69,18 @@ test('authenticated users can create a project owned task', function () {
     $project = Project::factory()->privateForTeam($user)->create(['title' => 'Internal rollout']);
     $project->syncTeams([$team]);
 
-    $this->actingAs($user)
+    $response = $this->actingAs($user)
         ->post(route('tasks.store'), [
             'title' => 'Schedule rollout review',
             'visibility' => 'private',
             'owner_type' => 'project',
             'owner_project_id' => $project->id,
             'assignee_ids' => [$user->id],
-        ])
-        ->assertRedirect(route('tasks.index'));
+        ]);
 
     $task = Task::query()->where('title', 'Schedule rollout review')->firstOrFail();
+
+    $response->assertRedirect(route('tasks.show', $task));
 
     expect($task->owner_type)->toBe('project')
         ->and($task->owner_id)->toBe($project->id)

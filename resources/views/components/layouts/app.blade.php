@@ -22,12 +22,14 @@
             const theme = localStorage.getItem('theme') ?? 'system';
             const html = document.documentElement;
 
-            html.classList.remove('light', 'dark');
+            html.classList.remove('light', 'dark', 'neon');
 
             if (theme === 'light') {
                 html.classList.add('light');
             } else if (theme === 'dark') {
                 html.classList.add('dark');
+            } else if (theme === 'neon') {
+                html.classList.add('neon');
             }
         })();
     </script>
@@ -145,6 +147,24 @@
                         </li>
                     </ul>
                 </div>
+
+                @if ($user->isSuperAdmin())
+                    <div class="app-sidebar__group">
+                        <div class="app-sidebar__group-label">{{ __('Administration') }}</div>
+                        <ul class="app-sidebar__menu">
+                            <li class="app-sidebar__menu-item">
+                                <a
+                                    href="{{ route('statuses.index') }}"
+                                    class="app-sidebar__menu-button"
+                                    data-sidebar-tooltip="{{ __('Statuses') }}"
+                                >
+                                    <i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i>
+                                    <span class="app-sidebar__menu-button-text">{{ __('Statuses') }}</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                @endif
             </div>
 
             <div class="app-sidebar__footer">
@@ -169,6 +189,10 @@
                                     <button type="button" class="app-sidebar__theme-option" data-theme-option="system" role="menuitem">
                                         <i class="fa-solid fa-desktop" aria-hidden="true"></i>
                                         <span>{{ __('System') }}</span>
+                                    </button>
+                                    <button type="button" class="app-sidebar__theme-option" data-theme-option="neon" role="menuitem">
+                                        <i class="fa-solid fa-bolt" aria-hidden="true"></i>
+                                        <span>{{ __('Neon') }}</span>
                                     </button>
                                 </div>
 

@@ -19,7 +19,7 @@ class StoreTaskController extends Controller
     {
         $validated = $request->validated();
 
-        DB::transaction(function () use ($request, $validated): void {
+        $task = DB::transaction(function () use ($request, $validated): Task {
             $task = Task::query()->create([
                 'title' => $validated['title'],
                 'description' => $validated['description'] ?? null,
@@ -50,9 +50,11 @@ class StoreTaskController extends Controller
             }
 
             $task->syncTeams($teamIds->filter()->unique()->values());
+
+            return $task;
         });
 
-        return redirect()->route('tasks.index')->with('status', __('Task created.'));
+        return redirect()->route('tasks.show', $task)->with('status', __('Task created.'));
     }
 
     /**

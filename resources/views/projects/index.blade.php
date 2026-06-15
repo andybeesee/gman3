@@ -50,8 +50,7 @@
                                 <td>
                                     @if ($status)
                                         <span
-                                            class="task-status"
-                                            style="--status-light: {{ $status->light_theme_color }}; --status-dark: {{ $status->dark_theme_color }};"
+                                            class="task-status status-color-{{ $status->color }}"
                                         >
                                             <i class="fa-solid {{ $status->fontAwesomeIcon() }}" aria-hidden="true"></i>
                                             <span>{{ $status->name }}</span>

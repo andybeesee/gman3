@@ -14,6 +14,15 @@
         @if (session('status'))
             <p class="dashboard-flash" role="status">{{ session('status') }}</p>
         @endif
+
+        @can('create', \App\Models\Task::class)
+            <div class="dashboard-header__actions">
+                <a href="{{ route('tasks.create') }}" class="task-form__submit task-form__submit--sm">
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                    {{ __('New Task') }}
+                </a>
+            </div>
+        @endcan
     </div>
 
     <section class="task-panel">
