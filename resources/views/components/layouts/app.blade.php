@@ -137,6 +137,24 @@
                         </li>
                     </ul>
                 </div>
+
+                @if ($user->isSuperAdmin())
+                    <div class="app-sidebar__group">
+                        <div class="app-sidebar__group-label">{{ __('Administration') }}</div>
+                        <ul class="app-sidebar__menu">
+                            <li class="app-sidebar__menu-item">
+                                <a
+                                    href="{{ route('statuses.index') }}"
+                                    class="app-sidebar__menu-button"
+                                    data-sidebar-tooltip="{{ __('Statuses') }}"
+                                >
+                                    <i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i>
+                                    <span class="app-sidebar__menu-button-text">{{ __('Statuses') }}</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                @endif
             </div>
 
             <div class="app-sidebar__footer">
