@@ -77,5 +77,5 @@
         </dl>
     </section>
 
-    <livewire:project-task-table :project="$project" />
+    <livewire:task-list context="project" :project="$project" />
 </x-layouts.app>

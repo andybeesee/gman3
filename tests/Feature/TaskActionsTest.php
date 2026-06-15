@@ -29,7 +29,7 @@ test('dashboard shows the project for tasks assigned from a project', function (
         ->assertSee('Launch website');
 });
 
-test('assignees see status change options in the task actions menu', function () {
+test('assignees see inline status options on the dashboard', function () {
     $assignee = User::factory()->create();
     $status = Status::factory()->create(['slug' => 'pending', 'is_closed' => false]);
 
@@ -41,7 +41,7 @@ test('assignees see status change options in the task actions menu', function ()
     $this->actingAs($assignee)
         ->get(route('dashboard'))
         ->assertSuccessful()
-        ->assertSee(__('Set status'))
+        ->assertSee(__('Status for :task', ['task' => $task->title]))
         ->assertSee($status->name);
 });
 
